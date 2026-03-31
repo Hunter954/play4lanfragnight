@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}{{ event.title }}{% endblock %}
 {% block content %}
-<section class="section event-hero">
-  <div class="container">
+<section class="section event-page section-event-detail">
+  <div class="container event-page-container">
     <div class="section-header event-page-header">
       <div>
         <span class="eyebrow">FragNight</span>
@@ -11,12 +11,12 @@
       </div>
     </div>
 
-    <div class="layout-grid cinema-layout">
-      <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form">
-        <div class="cinema-main-column">
-          <div class="cinema-map-card event-map-canvas">
-            {% for section in sections %}
-            <section class="cinema-section cinema-section-{{ section.key }}">
+    <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form" class="event-detail-grid">
+      <div class="event-left-column">
+        <div class="event-sectors-stack">
+          {% for section in sections %}
+          <section class="machine-sector-card machine-sector-card-{{ section.key }}">
+            <div class="machine-sector-info">
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
                   <h4>{{ section.title }}</h4>
@@ -28,66 +28,72 @@
                   <div class="spec-price">Valor: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
                 </div>
               </div>
-              <div class="section-machines-wrap">
-                <h3 class="cinema-section-title">{{ section.title }}</h3>
-                <div class="cinema-machine-grid">
-                  {% for machine in section.machines %}
-                  {% set unavailable = machine.id in unavailable_machine_ids %}
-                  <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs-html="{{ section.specs_html|replace('"', '&quot;') }}">
-                    <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
-                    <span class="seat-monitor">
-                      <span class="machine-number">{{ machine.label }}</span>
-                    </span>
-                    <span class="seat-stand"></span>
-                    <span class="machine-tooltip">
-                      <strong>{{ section.title }}</strong>
-                      <span class="tooltip-lines">{{ section.specs_html|safe }}</span>
-                      <small>Valor: R$ {{ '%.2f'|format(section.group.price) }}</small>
-                    </span>
-                  </label>
-                  {% endfor %}
-                </div>
+            </div>
+
+            <div class="machine-sector-stage">
+              <h3 class="cinema-section-title">{{ section.title }}</h3>
+              <div class="cinema-machine-grid sector-grid-{{ section.key }}">
+                {% for machine in section.machines %}
+                {% set unavailable = machine.id in unavailable_machine_ids %}
+                <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs-html="{{ section.specs_html|replace('"', '&quot;') }}">
+                  <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
+                  <span class="seat-monitor">
+                    <span class="machine-number">{{ machine.label }}</span>
+                  </span>
+                  <span class="seat-stand"></span>
+                  <span class="machine-tooltip">
+                    <strong>{{ section.title }}</strong>
+                    <span class="tooltip-lines">{{ section.specs_html|safe }}</span>
+                    <small>Valor: R$ {{ '%.2f'|format(section.group.price) }}</small>
+                  </span>
+                </label>
+                {% endfor %}
               </div>
-            </section>
-            {% endfor %}
+            </div>
+          </section>
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="checkout-panel event-sidebar">
+        <div class="event-meta-box event-meta-inline event-info-card">
+          <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
+          {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
+          {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
+        </div>
+
+        <div class="checkout-header">
+          <h3>Sua reserva</h3>
+          <p>Selecione uma ou várias máquinas.</p>
+        </div>
+
+        <button class="btn btn-ghost full map-trigger map-trigger-outline" type="button" data-open-map>Ver mapa das máquinas</button>
+
+        <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
+
+        <div class="form-grid">
+          <div>
+            <label>Nome do pagador</label>
+            <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+          </div>
+          <div>
+            <label>WhatsApp</label>
+            <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
           </div>
         </div>
 
-        <aside class="checkout-panel">
-          <div class="event-meta-box event-meta-inline">
-            <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
-            {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
-            {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
-          </div>
+        <div class="checkout-total">
+          <span>Total</span>
+          <strong id="total-price">R$ 0,00</strong>
+        </div>
 
-          <div class="checkout-header">
-            <h3>Sua reserva</h3>
-            <p>Selecione uma ou várias máquinas.</p>
-          </div>
-          <button class="btn btn-ghost full map-trigger" type="button" data-open-map>Ver mapa das máquinas</button>
-          <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
-          <div class="form-grid">
-            <div>
-              <label>Nome do pagador</label>
-              <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
-            </div>
-            <div>
-              <label>WhatsApp</label>
-              <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
-            </div>
-          </div>
-          <div class="checkout-total">
-            <span>Total</span>
-            <strong id="total-price">R$ 0,00</strong>
-          </div>
-          {% if current_user.is_authenticated %}
-          <button class="btn full" type="submit">Pagar com Mercado Pago</button>
-          {% else %}
-          <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
-          {% endif %}
-        </aside>
-      </form>
-    </div>
+        {% if current_user.is_authenticated %}
+        <button class="btn full" type="submit">Pagar com Mercado Pago</button>
+        {% else %}
+        <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
+        {% endif %}
+      </aside>
+    </form>
   </div>
 </section>
 
@@ -115,7 +121,7 @@
             {% endfor %}
           </div>
           <h3 class="mt-gap">FORA</h3>
-          <div class="ref-row">
+          <div class="ref-row ref-row-bottom">
             {% for label in ['05','04','03','02','01'] %}
             <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
             {% endfor %}
