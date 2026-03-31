@@ -1,0 +1,63 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Grupos de máquinas{% endblock %}
+{% block admin_content %}
+<div class="section-header">
+  <div>
+    <span class="eyebrow">Máquinas</span>
+    <h1>{{ event.title }}</h1>
+    <p>Crie grupos de 10 em 10 com configuração e valor próprios.</p>
+  </div>
+</div>
+
+<div class="glass-card">
+  <form method="post" class="admin-form">
+    <input type="hidden" name="action" value="create_group">
+    <div class="form-grid form-grid-3">
+      <div><label>Nome do grupo</label><input type="text" name="name" placeholder="Sala Alienware 360Hz" required></div>
+      <div><label>Local</label><input type="text" name="location_label" placeholder="Dentro da sala"></div>
+      <div><label>Quantidade</label><input type="number" name="quantity" value="10" min="1" step="1"></div>
+      <div><label>Valor por máquina</label><input type="number" name="price" value="0" min="0" step="0.01"></div>
+      <div><label>Cor do grupo</label><input type="color" name="color" value="#ef4444"></div>
+      <div></div>
+    </div>
+    <div>
+      <label>Configuração</label>
+      <textarea name="specs" placeholder="Monitor 360Hz Alienware, CPU alta performance, periféricos competitivos"></textarea>
+    </div>
+    <button class="btn" type="submit">Adicionar grupo</button>
+  </form>
+</div>
+
+<div class="cards-3 mt-24">
+  {% for group in groups %}
+  <article class="glass-card">
+    <div class="card-actions">
+      <strong>{{ group.name }}</strong>
+      <span class="badge">R$ {{ '%.2f'|format(group.price) }}</span>
+    </div>
+    <p>{{ group.location_label }}</p>
+    <p>{{ group.specs }}</p>
+    <p>{{ group.quantity }} máquinas</p>
+    <form method="post" onsubmit="return confirm('Excluir grupo?')">
+      <input type="hidden" name="action" value="delete_group">
+      <input type="hidden" name="group_id" value="{{ group.id }}">
+      <button class="btn btn-danger btn-sm" type="submit">Excluir grupo</button>
+    </form>
+  </article>
+  {% else %}
+  <article class="glass-card"><p>Nenhum grupo criado.</p></article>
+  {% endfor %}
+</div>
+
+<div class="glass-card mt-24">
+  <h3>Mapa atual</h3>
+  <div class="machine-grid admin-machine-grid">
+    {% for machine in machines %}
+    <div class="machine-card mini" style="--group-color: {{ machine.group.color }}">
+      <span class="machine-number">{{ machine.label }}</span>
+      <span class="machine-name">{{ machine.group.name }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

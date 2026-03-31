@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<section class="section auth-section">
+  <div class="container auth-grid">
+    <div class="auth-card">
+      <span class="eyebrow">Entrar</span>
+      <h1>Acesse sua conta</h1>
+      <form method="post" class="auth-form">
+        <label>E-mail</label>
+        <input type="email" name="email" required>
+        <label>Senha</label>
+        <input type="password" name="password" required>
+        <button class="btn full" type="submit">Entrar</button>
+      </form>
+    </div>
+    <div class="glass-card">
+      <h3>Pronto para o FragNight</h3>
+      <p>Depois do login você pode selecionar máquinas, pagar e acompanhar o status da reserva.</p>
+      <a class="btn btn-ghost" href="{{ url_for('auth.register') }}">Criar conta</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

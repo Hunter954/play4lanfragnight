@@ -1,0 +1,44 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Admin{% endblock %}
+{% block admin_content %}
+<div class="section-header">
+  <div>
+    <span class="eyebrow">Visão geral</span>
+    <h1>Painel administrativo</h1>
+  </div>
+</div>
+<div class="cards-3">
+  <article class="glass-card">
+    <h3>Eventos</h3>
+    <div class="metric">{{ events|length }}</div>
+  </article>
+  <article class="glass-card">
+    <h3>Receita aprovada</h3>
+    <div class="metric">R$ {{ '%.2f'|format(total_paid) }}</div>
+  </article>
+  <article class="glass-card">
+    <h3>Últimas reservas</h3>
+    <div class="metric">{{ reservations|length }}</div>
+  </article>
+</div>
+<div class="glass-card mt-24">
+  <h3>Reservas recentes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Evento</th><th>Cliente</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for item in reservations %}
+        <tr>
+          <td>{{ item.event.title }}</td>
+          <td>{{ item.user.name }}</td>
+          <td>R$ {{ '%.2f'|format(item.total_amount) }}</td>
+          <td>{{ item.payment_status }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">Sem reservas ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

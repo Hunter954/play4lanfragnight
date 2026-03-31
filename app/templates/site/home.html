@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Play4Lan FragNight{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
+      <h1>Reserve sua máquina para o <span>FragNight</span> como se estivesse escolhendo um assento no cinema.</h1>
+      <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha várias máquinas, veja a configuração no hover e confirme seu lugar com pagamento online.' }}</p>
+      <div class="hero-actions">
+        {% if active_event %}
+        <a class="btn" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Reservar agora</a>
+        {% endif %}
+        <a class="btn btn-ghost" href="#eventos">Ver eventos</a>
+      </div>
+      <div class="feature-row">
+        <div class="feature-pill">Monitores 360Hz</div>
+        <div class="feature-pill">Pagamento online</div>
+        <div class="feature-pill">Gestão completa</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-top">Evento ativo</div>
+      {% if active_event %}
+      <h3>{{ active_event.title }}</h3>
+      <p>{{ active_event.description }}</p>
+      <div class="info-list">
+        <div><strong>Data</strong><span>{{ active_event.event_date.strftime('%d/%m/%Y') }}</span></div>
+        <div><strong>Status</strong><span>{{ active_event.status }}</span></div>
+      </div>
+      <a class="btn full" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Escolher máquinas</a>
+      {% else %}
+      <h3>Nenhum evento ativo</h3>
+      <p>Cadastre o próximo FragNight no admin para ele aparecer aqui automaticamente.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Como funciona</span>
+        <h2>Fluxo pensado para vender rápido</h2>
+      </div>
+    </div>
+    <div class="cards-3">
+      <article class="glass-card">
+        <h3>1. Escolha as máquinas</h3>
+        <p>O usuário vê o mapa, toca ou passa o mouse e confere a configuração de cada lote.</p>
+      </article>
+      <article class="glass-card">
+        <h3>2. Pague online</h3>
+        <p>Checkout com Mercado Pago e atualização automática da reserva quando o pagamento aprovar.</p>
+      </article>
+      <article class="glass-card">
+        <h3>3. Notificação no WhatsApp</h3>
+        <p>Depois da aprovação, o sistema pode avisar o número configurado via Z-API com o resumo da compra.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="eventos">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Agenda</span>
+        <h2>FragNight cadastrados</h2>
+      </div>
+    </div>
+    <div class="cards-3">
+      {% for event in events %}
+      <article class="event-card">
+        <div class="event-date">{{ event.event_date.strftime('%d/%m/%Y') }}</div>
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.description or 'Evento FragNight cadastrado no admin.' }}</p>
+        <div class="card-actions">
+          <span class="badge {{ 'badge-live' if event.is_active else '' }}">{{ 'Ativo' if event.is_active else event.status }}</span>
+          <a href="{{ url_for('site.event_detail', slug=event.slug) }}">Abrir</a>
+        </div>
+      </article>
+      {% else %}
+      <article class="glass-card"><p>Nenhum evento cadastrado ainda.</p></article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

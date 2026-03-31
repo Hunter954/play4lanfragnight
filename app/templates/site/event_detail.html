@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<section class="section event-hero">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">FragNight</span>
+        <h1>{{ event.title }}</h1>
+        <p>{{ event.description }}</p>
+      </div>
+      <div class="event-meta-box">
+        <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
+        {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
+        {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
+      </div>
+    </div>
+
+    <div class="legend">
+      {% for group in groups %}
+      <div class="legend-item">
+        <span class="legend-dot" style="background: {{ group.color }}"></span>
+        <span>{{ group.name }} — R$ {{ '%.2f'|format(group.price) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="layout-grid">
+      <div class="screen-card">
+        <div class="screen-label">TELA / PALCO / STREAM</div>
+      </div>
+
+      <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form">
+        <div class="machine-map">
+          {% for group in groups %}
+          <section class="group-block">
+            <div class="group-header">
+              <div>
+                <h3>{{ group.name }}</h3>
+                <p>{{ group.location_label }} • {{ group.specs }}</p>
+              </div>
+              <div class="group-price">R$ {{ '%.2f'|format(group.price) }}</div>
+            </div>
+            <div class="machine-grid">
+              {% for machine in group.machines %}
+              {% set unavailable = machine.id in selected %}
+              <label class="machine-card {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ group.color }}" data-price="{{ group.price }}" data-machine-label="{{ machine.label }}" data-specs="{{ group.specs }}">
+                <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
+                <span class="machine-number">{{ machine.label }}</span>
+                <span class="machine-name">Máquina</span>
+                <span class="machine-tooltip">
+                  <strong>{{ group.name }}</strong>
+                  {{ group.specs }}
+                  <small>Valor: R$ {{ '%.2f'|format(group.price) }}</small>
+                </span>
+              </label>
+              {% endfor %}
+            </div>
+          </section>
+          {% endfor %}
+        </div>
+
+        <div class="checkout-panel">
+          <div class="checkout-header">
+            <h3>Sua reserva</h3>
+            <p>Selecione uma ou várias máquinas.</p>
+          </div>
+          <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
+          <div class="form-grid">
+            <div>
+              <label>Nome do pagador</label>
+              <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+            </div>
+            <div>
+              <label>WhatsApp</label>
+              <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
+            </div>
+          </div>
+          <div class="checkout-total">
+            <span>Total</span>
+            <strong id="total-price">R$ 0,00</strong>
+          </div>
+          {% if current_user.is_authenticated %}
+          <button class="btn full" type="submit">Pagar com Mercado Pago</button>
+          {% else %}
+          <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

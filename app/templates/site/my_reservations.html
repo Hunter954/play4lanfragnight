@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Minhas reservas{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Conta</span>
+        <h1>Minhas reservas</h1>
+      </div>
+    </div>
+    <div class="cards-3 single-column">
+      {% for reservation in reservations %}
+      <article class="glass-card">
+        <div class="card-actions">
+          <strong>{{ reservation.event.title }}</strong>
+          <span class="badge {{ 'badge-live' if reservation.payment_status == 'paid' else '' }}">{{ reservation.payment_status }}</span>
+        </div>
+        <p>Código: {{ reservation.code }}</p>
+        <p>Máquinas: {% for item in reservation.items %}{{ item.machine.label }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+        <p>Total: R$ {{ '%.2f'|format(reservation.total_amount) }}</p>
+        <p>Comprador: {{ reservation.payer_name or reservation.user.name }}</p>
+      </article>
+      {% else %}
+      <article class="glass-card"><p>Você ainda não tem reservas.</p></article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Vendas{% endblock %}
+{% block admin_content %}
+<div class="section-header">
+  <div>
+    <span class="eyebrow">Relatórios</span>
+    <h1>Compras por FragNight</h1>
+  </div>
+</div>
+<div class="glass-card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Evento</th><th>Cliente</th><th>WhatsApp</th><th>Máquinas</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+      <tbody>
+      {% for reservation in reservations %}
+      <tr>
+        <td>{{ reservation.event.title }}</td>
+        <td>{{ reservation.payer_name or reservation.user.name }}</td>
+        <td>{{ reservation.payer_phone or reservation.user.phone }}</td>
+        <td>{% for item in reservation.items %}{{ item.machine.label }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+        <td>R$ {{ '%.2f'|format(reservation.total_amount) }}</td>
+        <td>{{ reservation.payment_status }}</td>
+        <td>{{ reservation.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">Sem vendas registradas.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

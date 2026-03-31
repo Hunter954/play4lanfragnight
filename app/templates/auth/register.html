@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Cadastro{% endblock %}
+{% block content %}
+<section class="section auth-section">
+  <div class="container auth-grid">
+    <div class="auth-card">
+      <span class="eyebrow">Cadastro</span>
+      <h1>Crie sua conta</h1>
+      <form method="post" class="auth-form">
+        <label>Nome</label>
+        <input type="text" name="name" required>
+        <label>E-mail</label>
+        <input type="email" name="email" required>
+        <label>WhatsApp</label>
+        <input type="text" name="phone">
+        <label>Senha</label>
+        <input type="password" name="password" required>
+        <button class="btn full" type="submit">Criar conta</button>
+      </form>
+    </div>
+    <div class="glass-card">
+      <h3>Compra rápida</h3>
+      <p>Com a conta criada você consegue ver as reservas e reaproveitar seu cadastro nos próximos FragNight.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Eventos{% endblock %}
+{% block admin_content %}
+<div class="section-header">
+  <div>
+    <span class="eyebrow">Eventos</span>
+    <h1>Criar e gerenciar FragNight</h1>
+  </div>
+</div>
+
+<div class="glass-card">
+  <form method="post" class="admin-form">
+    <input type="hidden" name="action" value="create">
+    <div class="form-grid form-grid-3">
+      <div><label>Título</label><input type="text" name="title" required></div>
+      <div><label>Slug</label><input type="text" name="slug" placeholder="fragnight-31-03-2026"></div>
+      <div><label>Data</label><input type="date" name="event_date" required></div>
+      <div><label>Início</label><input type="datetime-local" name="starts_at"></div>
+      <div><label>Fim</label><input type="datetime-local" name="ends_at"></div>
+      <div><label>Status</label>
+        <select name="status">
+          <option value="draft">draft</option>
+          <option value="published">published</option>
+          <option value="archived">archived</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div><label>Descrição</label><textarea name="description"></textarea></div>
+      <div><label>Texto da home</label><textarea name="hero_text"></textarea></div>
+    </div>
+    <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Definir como evento ativo</label>
+    <button class="btn" type="submit">Criar evento</button>
+  </form>
+</div>
+
+<div class="glass-card mt-24">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Evento</th><th>Data</th><th>Status</th><th>Ativo</th><th>Ações</th></tr></thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>{{ event.title }}</td>
+          <td>{{ event.event_date.strftime('%d/%m/%Y') }}</td>
+          <td>{{ event.status }}</td>
+          <td>{{ 'Sim' if event.is_active else 'Não' }}</td>
+          <td class="actions-cell">
+            <a class="btn btn-sm" href="{{ url_for('admin.event_groups', event_id=event.id) }}">Máquinas</a>
+            <form method="post">
+              <input type="hidden" name="action" value="activate">
+              <input type="hidden" name="event_id" value="{{ event.id }}">
+              <button class="btn btn-sm btn-ghost" type="submit">Ativar</button>
+            </form>
+            <form method="post" onsubmit="return confirm('Remover evento?')">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="event_id" value="{{ event.id }}">
+              <button class="btn btn-sm btn-danger" type="submit">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Sem eventos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

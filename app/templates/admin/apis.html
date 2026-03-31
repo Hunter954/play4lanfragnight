@@ -1,0 +1,78 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}APIs{% endblock %}
+{% block admin_content %}
+<div class="section-header">
+  <div>
+    <span class="eyebrow">Integrações</span>
+    <h1>Configuração de APIs</h1>
+    <p>Campos sensíveis podem ser mascarados no botão ao lado.</p>
+  </div>
+</div>
+
+<div class="cards-2">
+  <div class="glass-card">
+    <h3>Mercado Pago</h3>
+    <form method="post" class="admin-form">
+      <label>Access Token</label>
+      <div class="masked-input"><input class="secret-field" type="password" name="mp_access_token" value="{{ site_settings.get('mp_access_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
+      <label>Public Key</label>
+      <div class="masked-input"><input class="secret-field" type="password" name="mp_public_key" value="{{ site_settings.get('mp_public_key', '') }}"><button type="button" class="toggle-secret">****</button></div>
+
+      <h3 class="mt-24">Z-API</h3>
+      <label>Base URL</label>
+      <input type="text" name="zapi_base_url" value="{{ site_settings.get('zapi_base_url', 'https://api.z-api.io') }}">
+      <label>Instance ID</label>
+      <input type="text" name="zapi_instance_id" value="{{ site_settings.get('zapi_instance_id', '') }}">
+      <label>Instance Token</label>
+      <div class="masked-input"><input class="secret-field" type="password" name="zapi_instance_token" value="{{ site_settings.get('zapi_instance_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
+      <label>Client Token</label>
+      <div class="masked-input"><input class="secret-field" type="password" name="zapi_client_token" value="{{ site_settings.get('zapi_client_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
+      <label>Telefone para notificações</label>
+      <input type="text" name="zapi_notify_phone" value="{{ site_settings.get('zapi_notify_phone', '') }}" placeholder="5545999999999">
+      <button class="btn" type="submit">Salvar integrações</button>
+    </form>
+  </div>
+
+  <div class="glass-card">
+    <h3>Status da instância Z-API</h3>
+    <p>Use os botões para validar credenciais e buscar o QR code de conexão.</p>
+    <div class="api-actions">
+      <button class="btn btn-ghost" id="btn-zapi-status" type="button">Consultar status</button>
+      <button class="btn" id="btn-zapi-qr" type="button">Buscar QR</button>
+    </div>
+    <pre id="zapi-result" class="api-result">Aguardando ação...</pre>
+    <div id="zapi-qr-box" class="qr-box"></div>
+
+    <hr class="divider">
+    <h3>Observação importante</h3>
+    <p>O Z-API resolve bem a conexão da instância do WhatsApp por QR no admin. Já login de cliente final via QR não é um fluxo padrão do provedor como OAuth; por isso a base foi separada para permitir evolução futura sem travar o resto do sistema.</p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('btn-zapi-status')?.addEventListener('click', async () => {
+  const result = document.getElementById('zapi-result');
+  result.textContent = 'Consultando...';
+  const res = await fetch('{{ url_for("admin.zapi_status") }}');
+  result.textContent = JSON.stringify(await res.json(), null, 2);
+});
+
+document.getElementById('btn-zapi-qr')?.addEventListener('click', async () => {
+  const result = document.getElementById('zapi-result');
+  const box = document.getElementById('zapi-qr-box');
+  result.textContent = 'Buscando QR...';
+  box.innerHTML = '';
+  const res = await fetch('{{ url_for("admin.zapi_qr") }}');
+  const data = await res.json();
+  result.textContent = JSON.stringify(data, null, 2);
+  const maybeImage = data.value || data.qrCode || data.base64QrCode || data.base64;
+  if (maybeImage) {
+    const img = document.createElement('img');
+    img.alt = 'QR Code Z-API';
+    img.src = maybeImage.startsWith('data:') ? maybeImage : `data:image/png;base64,${maybeImage}`;
+    box.appendChild(img);
+  }
+});
+</script>
+{% endblock %}
