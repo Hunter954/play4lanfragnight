@@ -28,9 +28,6 @@ source .venv/bin/activate
 pip install -r requirements.txt
 copy .env.example .env  # no Windows
 # ou cp .env.example .env
-flask db init
-flask db migrate -m "init"
-flask db upgrade
 python seed.py
 flask run
 ```
@@ -49,6 +46,16 @@ flask run
   - `ZAPI_INSTANCE_ID`
   - `ZAPI_INSTANCE_TOKEN`
   - `ZAPI_CLIENT_TOKEN`
+
+### Importante sobre o primeiro boot
+
+Esta versão já cria as tabelas automaticamente quando o app sobe pela primeira vez.
+Ou seja: no Railway, se o Postgres estiver vazio, o sistema faz o bootstrap sozinho.
+
+Também cria automaticamente o admin padrão, caso ainda não exista:
+
+- e-mail: `admin@play4lan.local`
+- senha: `123456`
 
 ## Fluxo Mercado Pago
 

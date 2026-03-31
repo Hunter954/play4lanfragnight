@@ -4,10 +4,49 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+
+
+def bootstrap_database():
+    """Cria tabelas e registros mínimos quando o banco estiver vazio."""
+    from .models import User, SiteSetting
+
+    db.create_all()
+
+    if not User.query.filter_by(email='admin@play4lan.local').first():
+        admin = User(
+            name='Administrador',
+            email='admin@play4lan.local',
+            password_hash=generate_password_hash('123456'),
+            is_admin=True,
+            phone='5545999999999',
+        )
+        db.session.add(admin)
+
+    default_settings = {
+        'site_name': 'Play4Lan FragNight',
+        'hero_title': 'Reserve sua máquina para o próximo FragNight',
+        'hero_subtitle': 'Escolha seu setup como no cinema, pague online e confirme sua vaga.',
+        'support_whatsapp': '',
+        'pix_label': 'Mercado Pago',
+        'mp_access_token': '',
+        'mp_public_key': '',
+        'zapi_instance_id': '',
+        'zapi_instance_token': '',
+        'zapi_client_token': '',
+    }
+
+    secret_keys = {'mp_access_token', 'zapi_instance_id', 'zapi_instance_token', 'zapi_client_token'}
+    for key, value in default_settings.items():
+        if not SiteSetting.query.filter_by(key=key).first():
+            SiteSetting.set(key, value, is_secret=key in secret_keys)
+
+    db.session.commit()
+
 
 def create_app():
     load_dotenv()
@@ -30,9 +69,13 @@ def create_app():
     migrate.init_app(app, db)
 
     from .models import User
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+
+    with app.app_context():
+        bootstrap_database()
 
     from .routes import site_bp, auth_bp, admin_bp, payment_bp
     app.register_blueprint(site_bp)
