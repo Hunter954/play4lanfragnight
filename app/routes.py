@@ -47,6 +47,17 @@ def split_location_label(value):
     return 'outros', value
 
 
+def format_specs_lines(specs):
+    specs = (specs or '').strip()
+    if not specs:
+        return ['Configuração não cadastrada.']
+    if '\n' in specs:
+        lines = [line.strip() for line in specs.splitlines() if line.strip()]
+    else:
+        lines = [line.strip() for line in specs.split(',') if line.strip()]
+    return lines or ['Configuração não cadastrada.']
+
+
 def build_machine_sections(groups):
     sections = []
     for group in groups:
@@ -63,12 +74,16 @@ def build_machine_sections(groups):
             remainder = [m for m in group.machines if m not in ordered_machines]
             remainder.sort(key=lambda m: m.label)
             ordered_machines.extend(remainder)
+        spec_lines = format_specs_lines(group.specs)
+        specs_html = '<br>'.join(spec_lines)
         sections.append({
             'key': section_key,
             'title': SECTION_META.get(section_key, SECTION_META['outros'])['title'],
             'display_label': display_label or group.name,
             'group': group,
             'machines': ordered_machines,
+            'spec_lines': spec_lines,
+            'specs_html': specs_html,
         })
     sections.sort(key=lambda item: (SECTION_META.get(item['key'], SECTION_META['outros'])['order'], item['group'].id))
     return sections

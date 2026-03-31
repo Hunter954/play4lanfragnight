@@ -34,36 +34,45 @@
   </form>
 </div>
 
-<div class="glass-card mt-24">
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Evento</th><th>Data</th><th>Status</th><th>Ativo</th><th>Ações</th></tr></thead>
-      <tbody>
-        {% for event in events %}
-        <tr>
-          <td>{{ event.title }}</td>
-          <td>{{ event.event_date.strftime('%d/%m/%Y') }}</td>
-          <td>{{ event.status }}</td>
-          <td>{{ 'Sim' if event.is_active else 'Não' }}</td>
-          <td class="actions-cell">
-            <a class="btn btn-sm" href="{{ url_for('admin.event_groups', event_id=event.id) }}">Máquinas</a>
-            <form method="post">
-              <input type="hidden" name="action" value="activate">
-              <input type="hidden" name="event_id" value="{{ event.id }}">
-              <button class="btn btn-sm btn-ghost" type="submit">Ativar</button>
-            </form>
-            <form method="post" onsubmit="return confirm('Remover evento?')">
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="event_id" value="{{ event.id }}">
-              <button class="btn btn-sm btn-danger" type="submit">Excluir</button>
-            </form>
-          </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5">Sem eventos.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<div class="cards-2 mt-24">
+  {% for event in events %}
+  <article class="glass-card">
+    <div class="card-actions"><strong>{{ event.title }}</strong><span class="badge">{{ event.status }}</span></div>
+    <form method="post" class="admin-form compact-form">
+      <input type="hidden" name="action" value="update">
+      <input type="hidden" name="event_id" value="{{ event.id }}">
+      <div class="form-grid form-grid-3">
+        <div><label>Título</label><input type="text" name="title" value="{{ event.title }}" required></div>
+        <div><label>Slug</label><input type="text" name="slug" value="{{ event.slug }}" required></div>
+        <div><label>Data</label><input type="date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" required></div>
+        <div><label>Início</label><input type="datetime-local" name="starts_at" value="{{ event.starts_at.strftime('%Y-%m-%dT%H:%M') if event.starts_at else '' }}"></div>
+        <div><label>Fim</label><input type="datetime-local" name="ends_at" value="{{ event.ends_at.strftime('%Y-%m-%dT%H:%M') if event.ends_at else '' }}"></div>
+        <div><label>Status</label>
+          <select name="status">
+            <option value="draft" {{ 'selected' if event.status=='draft' else '' }}>draft</option>
+            <option value="published" {{ 'selected' if event.status=='published' else '' }}>published</option>
+            <option value="archived" {{ 'selected' if event.status=='archived' else '' }}>archived</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div><label>Descrição</label><textarea name="description">{{ event.description or '' }}</textarea></div>
+        <div><label>Texto da home</label><textarea name="hero_text">{{ event.hero_text or '' }}</textarea></div>
+      </div>
+      <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" {{ 'checked' if event.is_active else '' }}> Evento ativo</label>
+      <div class="actions-inline">
+        <a class="btn btn-sm" href="{{ url_for('admin.event_groups', event_id=event.id) }}">Máquinas</a>
+        <button class="btn btn-sm btn-ghost" type="submit">Salvar alterações</button>
+      </div>
+    </form>
+    <form method="post" onsubmit="return confirm('Remover evento?')">
+      <input type="hidden" name="action" value="delete">
+      <input type="hidden" name="event_id" value="{{ event.id }}">
+      <button class="btn btn-sm btn-danger mt-16" type="submit">Excluir evento</button>
+    </form>
+  </article>
+  {% else %}
+  <article class="glass-card"><p>Sem eventos.</p></article>
+  {% endfor %}
 </div>
 {% endblock %}

@@ -3,61 +3,68 @@
 {% block content %}
 <section class="section event-hero">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header event-page-header">
       <div>
         <span class="eyebrow">FragNight</span>
         <h1>{{ event.title }}</h1>
         <p>{{ event.description }}</p>
       </div>
-      <div class="event-meta-box">
-        <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
-        {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
-        {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
-      </div>
-    </div>
-
-    <div class="legend">
-      {% for group in groups %}
-      {% set section_key, section_label = (group.location_label or '').split('|', 1) if '|' in (group.location_label or '') else ('', group.location_label or group.name) %}
-      <div class="legend-item">
-        <span class="legend-dot" style="background: {{ group.color }}"></span>
-        <span>{{ group.name }} — R$ {{ '%.2f'|format(group.price) }}</span>
-      </div>
-      {% endfor %}
     </div>
 
     <div class="layout-grid cinema-layout">
       <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form">
-        <div class="cinema-map-card">
-          {% for section in sections %}
-          <section class="cinema-section">
-            <h3 class="cinema-section-title">{{ section.title }}</h3>
-            <div class="cinema-machine-grid">
-              {% for machine in section.machines %}
-              {% set unavailable = machine.id in unavailable_machine_ids %}
-              <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs="{{ section.group.specs }}">
-                <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
-                <span class="seat-monitor">
-                  <span class="machine-number">{{ machine.label }}</span>
-                </span>
-                <span class="seat-stand"></span>
-                <span class="machine-tooltip">
-                  <strong>{{ section.group.name }}</strong>
-                  {{ section.group.specs }}
-                  <small>{{ section.display_label }} • R$ {{ '%.2f'|format(section.group.price) }}</small>
-                </span>
-              </label>
-              {% endfor %}
-            </div>
-          </section>
-          {% endfor %}
+        <div class="cinema-main-column">
+          <div class="cinema-map-card event-map-canvas">
+            {% for section in sections %}
+            <section class="cinema-section cinema-section-{{ section.key }}">
+              <div class="section-spec-card desktop-spec-card">
+                <div class="section-spec-card__inner">
+                  <h4>{{ section.title }}</h4>
+                  <div class="spec-lines">
+                    {% for line in section.spec_lines %}
+                    <div>{{ line }}</div>
+                    {% endfor %}
+                  </div>
+                  <div class="spec-price">Valor: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+                </div>
+              </div>
+              <div class="section-machines-wrap">
+                <h3 class="cinema-section-title">{{ section.title }}</h3>
+                <div class="cinema-machine-grid">
+                  {% for machine in section.machines %}
+                  {% set unavailable = machine.id in unavailable_machine_ids %}
+                  <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs-html="{{ section.specs_html|replace('"', '&quot;') }}">
+                    <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
+                    <span class="seat-monitor">
+                      <span class="machine-number">{{ machine.label }}</span>
+                    </span>
+                    <span class="seat-stand"></span>
+                    <span class="machine-tooltip">
+                      <strong>{{ section.title }}</strong>
+                      <span class="tooltip-lines">{{ section.specs_html|safe }}</span>
+                      <small>Valor: R$ {{ '%.2f'|format(section.group.price) }}</small>
+                    </span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </section>
+            {% endfor %}
+          </div>
         </div>
 
-        <div class="checkout-panel">
+        <aside class="checkout-panel">
+          <div class="event-meta-box event-meta-inline">
+            <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
+            {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
+            {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
+          </div>
+
           <div class="checkout-header">
             <h3>Sua reserva</h3>
             <p>Selecione uma ou várias máquinas.</p>
           </div>
+          <button class="btn btn-ghost full map-trigger" type="button" data-open-map>Ver mapa das máquinas</button>
           <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
           <div class="form-grid">
             <div>
@@ -78,9 +85,57 @@
           {% else %}
           <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
           {% endif %}
-        </div>
+        </aside>
       </form>
     </div>
   </div>
 </section>
+
+<div class="map-modal" id="map-modal" hidden>
+  <div class="map-modal__backdrop" data-close-map></div>
+  <div class="map-modal__dialog">
+    <button class="map-modal__close" type="button" data-close-map>×</button>
+    <div class="reference-map reference-map-popup">
+      <div class="ref-top-row">
+        {% for label in ['16','17','18','19','20'] %}
+        <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+        {% endfor %}
+      </div>
+      <div class="ref-lower-grid">
+        <div class="ref-left-column">
+          <h3>FORA</h3>
+          <div class="ref-row">
+            {% for label in ['11','12','13','14','15'] %}
+            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+            {% endfor %}
+          </div>
+          <div class="ref-row">
+            {% for label in ['06','07','08','09','10'] %}
+            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+            {% endfor %}
+          </div>
+          <h3 class="mt-gap">FORA</h3>
+          <div class="ref-row">
+            {% for label in ['05','04','03','02','01'] %}
+            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="ref-right-column">
+          <h3>SALA GAMER</h3>
+          <div class="ref-row">
+            {% for label in ['25','24','23','22','21'] %}
+            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+            {% endfor %}
+          </div>
+          <div class="ref-row">
+            {% for label in ['26','27','28','29','30'] %}
+            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

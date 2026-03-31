@@ -37,3 +37,19 @@ if (machineForm) {
   checkboxes.forEach((checkbox) => checkbox.addEventListener('change', updateSelection));
   updateSelection();
 }
+
+const mapModal = document.getElementById('map-modal');
+if (mapModal) {
+  document.querySelectorAll('[data-open-map]').forEach((button) => {
+    button.addEventListener('click', () => {
+      mapModal.hidden = false;
+      document.body.classList.add('modal-open');
+    });
+  });
+  document.querySelectorAll('[data-close-map]').forEach((button) => {
+    button.addEventListener('click', () => {
+      mapModal.hidden = true;
+      document.body.classList.remove('modal-open');
+    });
+  });
+}
