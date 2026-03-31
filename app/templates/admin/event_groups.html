@@ -5,7 +5,7 @@
   <div>
     <span class="eyebrow">Máquinas</span>
     <h1>{{ event.title }}</h1>
-    <p>Crie grupos de 10 em 10 com configuração e valor próprios.</p>
+    <p>Cadastre cada bloco no mapa fixo: Sala Gamer, Fora Meio e Fora Parede.</p>
   </div>
 </div>
 
@@ -13,12 +13,20 @@
   <form method="post" class="admin-form">
     <input type="hidden" name="action" value="create_group">
     <div class="form-grid form-grid-3">
-      <div><label>Nome do grupo</label><input type="text" name="name" placeholder="Sala Alienware 360Hz" required></div>
-      <div><label>Local</label><input type="text" name="location_label" placeholder="Dentro da sala"></div>
+      <div><label>Nome do grupo</label><input type="text" name="name" placeholder="Sala Gamer 360Hz" required></div>
+      <div>
+        <label>Mapa fixo</label>
+        <select name="layout_key">
+          <option value="sala_gamer">Sala Gamer (21 a 30)</option>
+          <option value="fora_meio">Fora Meio (06 a 15)</option>
+          <option value="fora_parede">Fora Parede (01 a 05 e 16 a 20)</option>
+          <option value="">Sem mapa fixo</option>
+        </select>
+      </div>
+      <div><label>Local / observação</label><input type="text" name="location_label" placeholder="Sala interna / parede / meio"></div>
       <div><label>Quantidade</label><input type="number" name="quantity" value="10" min="1" step="1"></div>
       <div><label>Valor por máquina</label><input type="number" name="price" value="0" min="0" step="0.01"></div>
-      <div><label>Cor do grupo</label><input type="color" name="color" value="#ef4444"></div>
-      <div></div>
+      <div><label>Cor do grupo</label><input type="color" name="color" value="#0057e1"></div>
     </div>
     <div>
       <label>Configuração</label>
@@ -30,12 +38,14 @@
 
 <div class="cards-3 mt-24">
   {% for group in groups %}
+  {% set section_key, section_label = (group.location_label or '').split('|', 1) if '|' in (group.location_label or '') else ('', group.location_label or group.name) %}
   <article class="glass-card">
     <div class="card-actions">
       <strong>{{ group.name }}</strong>
       <span class="badge">R$ {{ '%.2f'|format(group.price) }}</span>
     </div>
-    <p>{{ group.location_label }}</p>
+    <p><strong>Mapa:</strong> {{ section_key or 'livre' }}</p>
+    <p><strong>Local:</strong> {{ section_label }}</p>
     <p>{{ group.specs }}</p>
     <p>{{ group.quantity }} máquinas</p>
     <form method="post" onsubmit="return confirm('Excluir grupo?')">
@@ -51,12 +61,22 @@
 
 <div class="glass-card mt-24">
   <h3>Mapa atual</h3>
-  <div class="machine-grid admin-machine-grid">
-    {% for machine in machines %}
-    <div class="machine-card mini" style="--group-color: {{ machine.group.color }}">
-      <span class="machine-number">{{ machine.label }}</span>
-      <span class="machine-name">{{ machine.group.name }}</span>
-    </div>
+  <div class="cinema-map-card cinema-map-card-admin">
+    {% for section in sections %}
+    <section class="cinema-section">
+      <h3 class="cinema-section-title">{{ section.title }}</h3>
+      <div class="cinema-machine-grid">
+        {% for machine in section.machines %}
+        <div class="machine-seat machine-seat-admin" style="--group-color: {{ section.group.color }}">
+          <span class="seat-monitor">
+            <span class="machine-number">{{ machine.label }}</span>
+          </span>
+          <span class="seat-stand"></span>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="admin-section-caption">{{ section.group.name }} — {{ section.group.specs }}</p>
+    </section>
     {% endfor %}
   </div>
 </div>

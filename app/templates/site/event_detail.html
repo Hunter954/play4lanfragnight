@@ -18,6 +18,7 @@
 
     <div class="legend">
       {% for group in groups %}
+      {% set section_key, section_label = (group.location_label or '').split('|', 1) if '|' in (group.location_label or '') else ('', group.location_label or group.name) %}
       <div class="legend-item">
         <span class="legend-dot" style="background: {{ group.color }}"></span>
         <span>{{ group.name }} — R$ {{ '%.2f'|format(group.price) }}</span>
@@ -25,33 +26,25 @@
       {% endfor %}
     </div>
 
-    <div class="layout-grid">
-      <div class="screen-card">
-        <div class="screen-label">TELA / PALCO / STREAM</div>
-      </div>
-
+    <div class="layout-grid cinema-layout">
       <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form">
-        <div class="machine-map">
-          {% for group in groups %}
-          <section class="group-block">
-            <div class="group-header">
-              <div>
-                <h3>{{ group.name }}</h3>
-                <p>{{ group.location_label }} • {{ group.specs }}</p>
-              </div>
-              <div class="group-price">R$ {{ '%.2f'|format(group.price) }}</div>
-            </div>
-            <div class="machine-grid">
-              {% for machine in group.machines %}
-              {% set unavailable = machine.id in selected %}
-              <label class="machine-card {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ group.color }}" data-price="{{ group.price }}" data-machine-label="{{ machine.label }}" data-specs="{{ group.specs }}">
+        <div class="cinema-map-card">
+          {% for section in sections %}
+          <section class="cinema-section">
+            <h3 class="cinema-section-title">{{ section.title }}</h3>
+            <div class="cinema-machine-grid">
+              {% for machine in section.machines %}
+              {% set unavailable = machine.id in unavailable_machine_ids %}
+              <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs="{{ section.group.specs }}">
                 <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
-                <span class="machine-number">{{ machine.label }}</span>
-                <span class="machine-name">Máquina</span>
+                <span class="seat-monitor">
+                  <span class="machine-number">{{ machine.label }}</span>
+                </span>
+                <span class="seat-stand"></span>
                 <span class="machine-tooltip">
-                  <strong>{{ group.name }}</strong>
-                  {{ group.specs }}
-                  <small>Valor: R$ {{ '%.2f'|format(group.price) }}</small>
+                  <strong>{{ section.group.name }}</strong>
+                  {{ section.group.specs }}
+                  <small>{{ section.display_label }} • R$ {{ '%.2f'|format(section.group.price) }}</small>
                 </span>
               </label>
               {% endfor %}

@@ -21,7 +21,7 @@ if (machineForm) {
     let total = 0;
     const items = [];
     checkboxes.forEach((checkbox) => {
-      const card = checkbox.closest('.machine-card');
+      const card = checkbox.closest('.machine-seat, .machine-card');
       if (checkbox.checked) {
         total += Number(card.dataset.price || 0);
         items.push(`Máquina ${card.dataset.machineLabel}`);

@@ -19,6 +19,60 @@ def admin_required():
     if not current_user.is_authenticated or not current_user.is_admin:
         abort(403)
 
+FIXED_LAYOUTS = {
+    'sala_gamer': ['25', '24', '23', '22', '21', '26', '27', '28', '29', '30'],
+    'fora_meio': ['06', '07', '08', '09', '10', '11', '12', '13', '14', '15'],
+    'fora_parede': ['16', '17', '18', '19', '20', '05', '04', '03', '02', '01'],
+}
+
+SECTION_META = {
+    'sala_gamer': {'title': 'SALA GAMER', 'order': 1},
+    'fora_meio': {'title': 'FORA MEIO', 'order': 2},
+    'fora_parede': {'title': 'FORA PAREDE', 'order': 3},
+    'outros': {'title': 'OUTROS', 'order': 99},
+}
+
+def split_location_label(value):
+    value = (value or '').strip()
+    if '|' in value:
+        key, display = value.split('|', 1)
+        return key.strip(), display.strip()
+    normalized = value.lower().strip()
+    if 'sala' in normalized or 'gamer' in normalized:
+        return 'sala_gamer', value
+    if 'parede' in normalized:
+        return 'fora_parede', value
+    if 'fora' in normalized or 'meio' in normalized:
+        return 'fora_meio', value
+    return 'outros', value
+
+
+def build_machine_sections(groups):
+    sections = []
+    for group in groups:
+        section_key, display_label = split_location_label(group.location_label or group.name)
+        ordered_labels = FIXED_LAYOUTS.get(section_key, [m.label for m in group.machines])
+        machine_by_label = {m.label.zfill(2): m for m in group.machines}
+        machine_by_label.update({m.label: m for m in group.machines})
+        ordered_machines = []
+        for label in ordered_labels:
+            machine = machine_by_label.get(label)
+            if machine:
+                ordered_machines.append(machine)
+        if section_key not in FIXED_LAYOUTS:
+            remainder = [m for m in group.machines if m not in ordered_machines]
+            remainder.sort(key=lambda m: m.label)
+            ordered_machines.extend(remainder)
+        sections.append({
+            'key': section_key,
+            'title': SECTION_META.get(section_key, SECTION_META['outros'])['title'],
+            'display_label': display_label or group.name,
+            'group': group,
+            'machines': ordered_machines,
+        })
+    sections.sort(key=lambda item: (SECTION_META.get(item['key'], SECTION_META['outros'])['order'], item['group'].id))
+    return sections
+
 @site_bp.route('/')
 def home():
     events = FragNightEvent.query.filter_by(status='published').order_by(FragNightEvent.event_date.desc()).all()
@@ -28,11 +82,14 @@ def home():
 @site_bp.route('/evento/<slug>')
 def event_detail(slug):
     event = FragNightEvent.query.filter_by(slug=slug).first_or_404()
-    groups = MachineGroup.query.filter_by(event_id=event.id).all()
-    selected = set()
-    if current_user.is_authenticated:
-        selected = {item.machine_id for r in current_user.reservations for item in r.items if r.event_id == event.id and r.payment_status in ['pending', 'paid']}
-    return render_template('site/event_detail.html', event=event, groups=groups, selected=selected)
+    groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
+    reserved_rows = db.session.query(ReservationItem.machine_id).join(Reservation).filter(
+        Reservation.event_id == event.id,
+        Reservation.payment_status.in_(['pending', 'paid'])
+    ).all()
+    unavailable_machine_ids = {row[0] for row in reserved_rows}
+    sections = build_machine_sections(groups)
+    return render_template('site/event_detail.html', event=event, groups=groups, sections=sections, unavailable_machine_ids=unavailable_machine_ids)
 
 @site_bp.route('/checkout/<slug>', methods=['POST'])
 @login_required
@@ -205,22 +262,37 @@ def event_groups(event_id):
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'create_group':
+            layout_key = request.form.get('layout_key', '').strip()
+            location_label = request.form.get('location_label', '').strip()
+            fixed_labels = FIXED_LAYOUTS.get(layout_key, [])
+            quantity = len(fixed_labels) if fixed_labels else int(request.form.get('quantity', 10))
+
+            encoded_location = f"{layout_key}|{location_label}" if layout_key else location_label
             group = MachineGroup(
                 event_id=event.id,
                 name=request.form.get('name'),
-                location_label=request.form.get('location_label'),
-                quantity=int(request.form.get('quantity', 10)),
+                location_label=encoded_location,
+                quantity=quantity,
                 price=request.form.get('price', 0),
                 specs=request.form.get('specs'),
-                color=request.form.get('color', '#ef4444'),
+                color=request.form.get('color', '#0057e1'),
             )
             db.session.add(group)
             db.session.flush()
 
-            existing_count = Machine.query.filter_by(event_id=event.id).count()
-            for i in range(group.quantity):
-                label = str(existing_count + i + 1)
-                db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
+            used_labels = {machine.label.zfill(2) for machine in Machine.query.filter_by(event_id=event.id).all()}
+            labels_to_create = [label for label in fixed_labels if label.zfill(2) not in used_labels] if fixed_labels else []
+            if not labels_to_create and fixed_labels:
+                labels_to_create = fixed_labels
+
+            if labels_to_create:
+                for label in labels_to_create:
+                    db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
+            else:
+                existing_count = Machine.query.filter_by(event_id=event.id).count()
+                for i in range(group.quantity):
+                    label = str(existing_count + i + 1).zfill(2)
+                    db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
             db.session.commit()
             flash('Grupo e máquinas criados.', 'success')
         elif action == 'delete_group':
@@ -229,9 +301,9 @@ def event_groups(event_id):
             db.session.commit()
             flash('Grupo removido.', 'success')
         return redirect(url_for('admin.event_groups', event_id=event.id))
-    groups = MachineGroup.query.filter_by(event_id=event.id).all()
-    machines = Machine.query.filter_by(event_id=event.id).order_by(db.cast(Machine.label, db.Integer)).all()
-    return render_template('admin/event_groups.html', event=event, groups=groups, machines=machines)
+    groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
+    sections = build_machine_sections(groups)
+    return render_template('admin/event_groups.html', event=event, groups=groups, sections=sections)
 
 @admin_bp.route('/vendas')
 @login_required
