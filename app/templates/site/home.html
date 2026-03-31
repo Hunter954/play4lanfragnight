@@ -5,8 +5,8 @@
   <div class="container hero-grid">
     <div>
       <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
-      <h1>Reserve sua máquina para o <span>FragNight</span> como se estivesse escolhendo um assento no cinema.</h1>
-      <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha várias máquinas, veja a configuração no hover e confirme seu lugar com pagamento online.' }}</p>
+      <h1>Reserve sua máquina para o <span>FragNight</span> na Play4Lan</h1>
+      <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha várias máquinas, veja a configuração antes de fazer o pagamento.' }}</p>
       <div class="hero-actions">
         {% if active_event %}
         <a class="btn" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Reservar agora</a>
@@ -16,7 +16,6 @@
       <div class="feature-row">
         <div class="feature-pill">Monitores 360Hz</div>
         <div class="feature-pill">Pagamento online</div>
-        <div class="feature-pill">Gestão completa</div>
       </div>
     </div>
     <div class="hero-card">

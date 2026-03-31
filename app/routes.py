@@ -240,6 +240,39 @@ def sales():
     reservations = Reservation.query.order_by(Reservation.created_at.desc()).all()
     return render_template('admin/sales.html', reservations=reservations)
 
+
+
+@admin_bp.route('/minha-conta', methods=['GET', 'POST'])
+@login_required
+def account():
+    admin_required()
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        password_confirm = request.form.get('password_confirm', '')
+
+        existing_user = User.query.filter(User.email == email, User.id != current_user.id).first()
+        if existing_user:
+            flash('Este e-mail já está em uso por outro usuário.', 'error')
+            return redirect(url_for('admin.account'))
+
+        current_user.email = email
+
+        if password:
+            if len(password) < 6:
+                flash('A nova senha precisa ter pelo menos 6 caracteres.', 'error')
+                return redirect(url_for('admin.account'))
+            if password != password_confirm:
+                flash('A confirmação da senha não confere.', 'error')
+                return redirect(url_for('admin.account'))
+            current_user.set_password(password)
+
+        db.session.commit()
+        flash('Conta atualizada com sucesso.', 'success')
+        return redirect(url_for('admin.account'))
+
+    return render_template('admin/account.html')
+
 @admin_bp.route('/apis', methods=['GET', 'POST'])
 @login_required
 def apis():
