@@ -19,14 +19,14 @@
             <div class="machine-sector-info">
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
-                  <span class="config-label">Configurações</span>
                   <h4>{{ section.title }}</h4>
+                  <span class="config-label">Configurações</span>
                   <div class="spec-lines">
                     {% for line in section.spec_lines %}
                     <div>{{ line }}</div>
                     {% endfor %}
                   </div>
-                  <div class="spec-price">Valor: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+                  <div class="spec-price">Valor por máquina: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
                 </div>
               </div>
             </div>
