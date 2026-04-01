@@ -548,3 +548,33 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
   .admin-event-list,.admin-event-card__actions,.form-grid-4{grid-template-columns:1fr}
   .admin-event-card__top{flex-direction:column;align-items:flex-start}
 }
+
+
+/* ===== FORA MEIO visual ordering / spacing ===== */
+.section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid{
+  grid-template-columns:repeat(5,84px);
+  gap:22px 14px;
+}
+.section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor{
+  width:84px;
+}
+@media (max-width: 1180px){
+  .section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid{
+    grid-template-columns:repeat(5,70px);
+    gap:18px 10px;
+  }
+  .section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor{
+    width:70px;
+    height:46px;
+  }
+}
+@media (max-width: 720px){
+  .section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid{
+    grid-template-columns:repeat(5,54px);
+    gap:14px 8px;
+  }
+  .section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor{
+    width:54px;
+    height:38px;
+  }
+}
