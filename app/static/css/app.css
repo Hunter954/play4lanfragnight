@@ -498,3 +498,53 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
   .section-event-detail .checkout-payment-block{margin-top:14px;}
   .section-event-detail .form-grid{grid-template-columns:1fr;gap:12px;}
 }
+
+
+/* ===== Admin events cleanup ===== */
+.admin-layout{grid-template-columns:240px minmax(0,1fr);align-items:start}
+.admin-main{min-width:0}
+.admin-events-header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.admin-events-create-card{overflow:hidden}
+.admin-create-head{margin-bottom:18px;align-items:start}
+.muted-copy{color:var(--muted)}
+.mini-badges{display:flex;gap:10px;flex-wrap:wrap}
+.form-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.admin-check-wrap{display:flex;align-items:flex-end}
+.admin-check-wrap .checkbox-line{margin:0 0 6px}
+.admin-events-subheader{align-items:end}
+.admin-event-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.admin-event-card{padding:18px;display:grid;gap:14px;min-width:0}
+.admin-event-card.is-active{box-shadow:0 0 0 1px rgba(34,197,94,.18),0 10px 50px rgba(0,0,0,.3)}
+.admin-event-card__top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.admin-event-card__top h3{font-size:1.15rem;line-height:1.12;margin:0}
+.admin-event-card__slug{font-size:.82rem;color:#7eb0ff;word-break:break-word}
+.admin-event-card__meta{display:grid;gap:10px}
+.admin-event-card__meta div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.admin-event-card__meta span{color:var(--muted);font-size:.85rem}
+.admin-event-card__meta strong{font-size:.95rem}
+.admin-event-card__actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-event-card__actions form,.admin-event-card__secondary form{margin:0}
+.admin-event-card__secondary{display:flex;justify-content:flex-start}
+.admin-event-panel{padding-top:2px;border-top:1px solid var(--line)}
+.admin-modal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px}
+.admin-modal[hidden]{display:none}
+.admin-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+.admin-modal__dialog{position:relative;z-index:1;width:min(900px,96vw);padding:24px}
+.admin-modal__close{position:absolute;top:12px;right:12px;width:40px;height:40px;border:none;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:1.4rem;cursor:pointer}
+.hero-card-top--with-badge{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+@media (max-width: 1200px){
+  .admin-event-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .form-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (max-width: 900px){
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{position:static}
+  .admin-event-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (max-width: 640px){
+  .admin-event-list,.admin-event-card__actions,.form-grid-4{grid-template-columns:1fr}
+  .admin-event-card__top{flex-direction:column;align-items:flex-start}
+}

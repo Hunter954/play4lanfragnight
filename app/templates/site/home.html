@@ -19,7 +19,10 @@
       </div>
     </div>
     <div class="hero-card">
-      <div class="hero-card-top">Evento ativo</div>
+      <div class="hero-card-top hero-card-top--with-badge">
+        <span>Evento ativo</span>
+        {% if active_event and active_event.is_active %}<span class="badge badge-live">Ativo</span>{% endif %}
+      </div>
       {% if active_event %}
       <h3>{{ active_event.title }}</h3>
       <p>{{ active_event.description }}</p>
@@ -36,30 +39,6 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    <div class="section-header">
-      <div>
-        <span class="eyebrow">Como funciona</span>
-        <h2>Fluxo pensado para vender rápido</h2>
-      </div>
-    </div>
-    <div class="cards-3">
-      <article class="glass-card">
-        <h3>1. Escolha as máquinas</h3>
-        <p>O usuário vê o mapa, toca ou passa o mouse e confere a configuração de cada lote.</p>
-      </article>
-      <article class="glass-card">
-        <h3>2. Pague online</h3>
-        <p>Checkout com Mercado Pago e atualização automática da reserva quando o pagamento aprovar.</p>
-      </article>
-      <article class="glass-card">
-        <h3>3. Notificação no WhatsApp</h3>
-        <p>Depois da aprovação, o sistema pode avisar o número configurado via Z-API com o resumo da compra.</p>
-      </article>
-    </div>
-  </div>
-</section>
 
 <section class="section" id="eventos">
   <div class="container">

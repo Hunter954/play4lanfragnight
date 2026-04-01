@@ -64,3 +64,66 @@ if (mapModal) {
     });
   });
 }
+
+
+function slugifyValue(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+document.querySelectorAll('[data-slug-source]').forEach((input) => {
+  const targetSelector = input.getAttribute('data-slug-target');
+  const target = targetSelector ? document.querySelector(targetSelector) : null;
+  if (!target) return;
+
+  const syncSlug = () => {
+    if (target.dataset.userEdited === '1') return;
+    target.value = slugifyValue(input.value);
+  };
+
+  input.addEventListener('input', syncSlug);
+  target.addEventListener('input', () => {
+    target.dataset.userEdited = target.value ? '1' : '0';
+  });
+  syncSlug();
+});
+
+document.querySelectorAll('[data-toggle-panel]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const panelId = button.getAttribute('data-toggle-panel');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) return;
+    const isHidden = panel.hasAttribute('hidden');
+    document.querySelectorAll('.admin-event-panel').forEach((item) => {
+      if (item !== panel) item.setAttribute('hidden', 'hidden');
+    });
+    if (isHidden) {
+      panel.removeAttribute('hidden');
+      button.textContent = 'Fechar edição';
+    } else {
+      panel.setAttribute('hidden', 'hidden');
+      button.textContent = 'Editar';
+    }
+  });
+});
+
+const adminModal = document.getElementById('default-event-modal');
+if (adminModal) {
+  document.querySelectorAll('[data-open-modal="default-event-modal"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      adminModal.hidden = false;
+      document.body.classList.add('modal-open');
+    });
+  });
+
+  adminModal.querySelectorAll('[data-close-modal]').forEach((button) => {
+    button.addEventListener('click', () => {
+      adminModal.hidden = true;
+      document.body.classList.remove('modal-open');
+    });
+  });
+}

@@ -1,4 +1,6 @@
 from decimal import Decimal
+import re
+import unicodedata
 from datetime import datetime, timedelta
 from uuid import uuid4
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
@@ -280,7 +282,7 @@ def events():
         action = request.form.get('action')
 
         if action == 'create':
-            slug = request.form.get('slug') or request.form.get('title', '').lower().replace(' ', '-').replace('/', '-')
+            slug = unique_event_slug(request.form.get('slug') or request.form.get('title'))
             event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
             starts_at = parse_local_datetime(request.form.get('starts_at'))
             ends_at = parse_local_datetime(request.form.get('ends_at'))
@@ -308,12 +310,8 @@ def events():
             source_event = FragNightEvent.query.get_or_404(int(template_id))
             event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
             starts_at, ends_at = build_default_event_times(event_date_value)
-            base_slug = request.form.get('slug') or f"{source_event.slug}-{event_date_value.strftime('%d-%m-%Y')}"
-            slug = base_slug
-            suffix = 2
-            while FragNightEvent.query.filter_by(slug=slug).first():
-                slug = f"{base_slug}-{suffix}"
-                suffix += 1
+            slug_seed = request.form.get('slug') or request.form.get('title') or f"{source_event.title} {event_date_value.strftime('%d-%m-%Y')}"
+            slug = unique_event_slug(slug_seed)
             if request.form.get('make_active'):
                 FragNightEvent.query.update({'is_active': False})
             event = FragNightEvent(
@@ -341,7 +339,7 @@ def events():
             if request.form.get('use_default_time'):
                 starts_at, ends_at = build_default_event_times(event_date_value)
             event.title = request.form.get('title')
-            event.slug = request.form.get('slug')
+            event.slug = unique_event_slug(request.form.get('slug') or request.form.get('title'), current_event_id=event.id)
             event.event_date = event_date_value
             event.starts_at = starts_at
             event.ends_at = ends_at
@@ -368,6 +366,12 @@ def events():
             event.is_active = True
             db.session.commit()
             flash('Evento definido como ativo.', 'success')
+
+        elif action == 'deactivate':
+            event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
+            event.is_active = False
+            db.session.commit()
+            flash('Evento desativado.', 'success')
 
         elif action == 'delete':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
