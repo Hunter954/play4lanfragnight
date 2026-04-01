@@ -578,3 +578,53 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
     height:38px;
   }
 }
+
+
+/* ===== Event detail layout + image map modal fix ===== */
+.section-event-detail .machine-sector-card{grid-template-columns:280px minmax(0,1fr);gap:24px;overflow:hidden;}
+.section-event-detail .machine-sector-stage{padding-inline:8px;}
+.section-event-detail .cinema-machine-grid{grid-template-columns:repeat(5,76px);gap:22px 14px;padding:6px 0 4px;}
+.section-event-detail .machine-seat .seat-monitor{width:76px;height:50px;}
+.section-event-detail .machine-seat .seat-stand{margin-top:8px;}
+.section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid,
+.section-event-detail .machine-sector-card-fora_parede .cinema-machine-grid,
+.section-event-detail .machine-sector-card-sala_gamer .cinema-machine-grid{grid-template-columns:repeat(5,76px);gap:22px 14px;}
+.section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor,
+.section-event-detail .machine-sector-card-fora_parede .machine-seat .seat-monitor,
+.section-event-detail .machine-sector-card-sala_gamer .machine-seat .seat-monitor{width:76px;height:50px;}
+
+.map-modal__dialog--image{width:min(1380px,96vw);padding:22px 22px 18px;display:grid;gap:16px;}
+.map-modal__toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-right:52px;}
+.map-modal__toolbar strong{font-size:1.05rem;}
+.map-modal__actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.map-modal__viewport{position:relative;overflow:auto;max-height:78vh;border-radius:22px;border:1px solid rgba(255,255,255,.08);background:rgba(5,8,16,.82);padding:16px;cursor:grab;}
+.map-modal__viewport.is-dragging{cursor:grabbing;}
+.map-modal__image{display:block;max-width:none;width:100%;height:auto;transform-origin:top left;transition:transform .14s ease;user-select:none;-webkit-user-drag:none;}
+
+@media (max-width: 1180px){
+  .section-event-detail .machine-sector-card{grid-template-columns:252px minmax(0,1fr);gap:20px;}
+  .section-event-detail .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-fora_parede .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-sala_gamer .cinema-machine-grid{grid-template-columns:repeat(5,68px);gap:18px 10px;}
+  .section-event-detail .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-fora_parede .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-sala_gamer .machine-seat .seat-monitor{width:68px;height:44px;}
+}
+
+@media (max-width: 720px){
+  .section-event-detail .machine-sector-card{grid-template-columns:1fr;overflow:visible;}
+  .section-event-detail .machine-sector-stage{padding-inline:0;}
+  .section-event-detail .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-fora_meio .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-fora_parede .cinema-machine-grid,
+  .section-event-detail .machine-sector-card-sala_gamer .cinema-machine-grid{grid-template-columns:repeat(5,54px);gap:16px 8px;}
+  .section-event-detail .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-fora_meio .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-fora_parede .machine-seat .seat-monitor,
+  .section-event-detail .machine-sector-card-sala_gamer .machine-seat .seat-monitor{width:54px;height:36px;}
+  .map-modal__dialog--image{padding:16px 12px 12px;}
+  .map-modal__toolbar{align-items:flex-start;flex-direction:column;padding-right:42px;}
+  .map-modal__viewport{padding:10px;max-height:74vh;}
+}

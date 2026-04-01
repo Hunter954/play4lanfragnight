@@ -102,48 +102,23 @@
 
 <div class="map-modal" id="map-modal" hidden>
   <div class="map-modal__backdrop" data-close-map></div>
-  <div class="map-modal__dialog">
+  <div class="map-modal__dialog map-modal__dialog--image">
     <button class="map-modal__close" type="button" data-close-map>×</button>
-    <div class="reference-map reference-map-popup">
-      <div class="ref-top-row">
-        {% for label in ['16','17','18','19','20'] %}
-        <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-        {% endfor %}
+    <div class="map-modal__toolbar">
+      <strong>Mapa das máquinas</strong>
+      <div class="map-modal__actions">
+        <button class="btn btn-ghost btn-sm" type="button" data-zoom-out>−</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-zoom-reset>100%</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-zoom-in>+</button>
       </div>
-      <div class="ref-lower-grid">
-        <div class="ref-left-column">
-          <h3>FORA</h3>
-          <div class="ref-row">
-            {% for label in ['11','12','13','14','15'] %}
-            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-            {% endfor %}
-          </div>
-          <div class="ref-row">
-            {% for label in ['06','07','08','09','10'] %}
-            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-            {% endfor %}
-          </div>
-          <h3 class="mt-gap">FORA</h3>
-          <div class="ref-row ref-row-bottom">
-            {% for label in ['05','04','03','02','01'] %}
-            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="ref-right-column">
-          <h3>SALA GAMER</h3>
-          <div class="ref-row">
-            {% for label in ['25','24','23','22','21'] %}
-            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-            {% endfor %}
-          </div>
-          <div class="ref-row">
-            {% for label in ['26','27','28','29','30'] %}
-            <div class="ref-machine"><span class="seat-monitor"><span class="machine-number">{{ label }}</span></span><span class="seat-stand"></span></div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
+    </div>
+    <div class="map-modal__viewport" data-map-viewport>
+      <img
+        src="https://i.imgur.com/GDJzzA5.png"
+        alt="Mapa das máquinas"
+        class="map-modal__image"
+        data-map-image
+      >
     </div>
   </div>
 </div>
