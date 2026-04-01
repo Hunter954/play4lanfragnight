@@ -24,13 +24,24 @@ if (machineForm) {
       const card = checkbox.closest('.machine-seat, .machine-card');
       if (checkbox.checked) {
         total += Number(card.dataset.price || 0);
-        items.push(`Máquina ${card.dataset.machineLabel}`);
+        items.push(String(card.dataset.machineLabel || '').padStart(2, '0'));
         card.classList.add('is-selected');
       } else {
         card.classList.remove('is-selected');
       }
     });
-    selectedList.textContent = items.length ? items.join(', ') : 'Nenhuma máquina selecionada.';
+
+    if (items.length) {
+      selectedList.classList.remove('is-empty');
+      selectedList.innerHTML = items
+        .sort((a, b) => Number(a) - Number(b))
+        .map((label) => `<span class="selected-badge">${label}</span>`)
+        .join('');
+    } else {
+      selectedList.classList.add('is-empty');
+      selectedList.textContent = 'Nenhuma máquina selecionada.';
+    }
+
     totalPrice.textContent = money(total);
   }
 

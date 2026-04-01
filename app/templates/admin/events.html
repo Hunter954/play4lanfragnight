@@ -8,36 +8,73 @@
   </div>
 </div>
 
-<div class="glass-card">
-  <form method="post" class="admin-form">
-    <input type="hidden" name="action" value="create">
-    <div class="form-grid form-grid-3">
-      <div><label>Título</label><input type="text" name="title" required></div>
-      <div><label>Slug</label><input type="text" name="slug" placeholder="fragnight-31-03-2026"></div>
-      <div><label>Data</label><input type="date" name="event_date" required></div>
-      <div><label>Início</label><input type="datetime-local" name="starts_at"></div>
-      <div><label>Fim</label><input type="datetime-local" name="ends_at"></div>
-      <div><label>Status</label>
-        <select name="status">
-          <option value="draft">draft</option>
-          <option value="published">published</option>
-          <option value="archived">archived</option>
-        </select>
+<div class="cards-2 admin-events-grid">
+  <div class="glass-card">
+    <h3>Criar evento manualmente</h3>
+    <form method="post" class="admin-form">
+      <input type="hidden" name="action" value="create">
+      <div class="form-grid form-grid-3">
+        <div><label>Título</label><input type="text" name="title" required></div>
+        <div><label>Slug</label><input type="text" name="slug" placeholder="fragnight-31-03-2026"></div>
+        <div><label>Data</label><input type="date" name="event_date" required></div>
+        <div><label>Início</label><input type="datetime-local" name="starts_at"></div>
+        <div><label>Fim</label><input type="datetime-local" name="ends_at"></div>
+        <div><label>Status</label>
+          <select name="status">
+            <option value="draft">draft</option>
+            <option value="published">published</option>
+            <option value="archived">archived</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-grid">
-      <div><label>Descrição</label><textarea name="description"></textarea></div>
-      <div><label>Texto da home</label><textarea name="hero_text"></textarea></div>
-    </div>
-    <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Definir como evento ativo</label>
-    <button class="btn" type="submit">Criar evento</button>
-  </form>
+      <div class="form-grid">
+        <div><label>Descrição</label><textarea name="description"></textarea></div>
+        <div><label>Texto da home</label><textarea name="hero_text"></textarea></div>
+      </div>
+      <div class="actions-inline">
+        <label class="checkbox-line"><input type="checkbox" name="use_default_time" value="1" checked> Usar horário padrão 22:00 → 06:00</label>
+        <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Definir como evento ativo</label>
+      </div>
+      <button class="btn" type="submit">Criar evento</button>
+    </form>
+  </div>
+
+  <div class="glass-card">
+    <h3>Criar com 1 clique pelo padrão</h3>
+    <p class="muted-copy">Usa o evento marcado como padrão para copiar grupos, máquinas, preços e configurações. Só muda data e horários padrão do FragNight.</p>
+    {% if default_template_id %}
+    <form method="post" class="admin-form">
+      <input type="hidden" name="action" value="create_from_default">
+      <input type="hidden" name="template_event_id" value="{{ default_template_id }}">
+      <div class="form-grid form-grid-2">
+        <div><label>Título</label><input type="text" name="title" placeholder="FragNight 05/04/2026"></div>
+        <div><label>Slug</label><input type="text" name="slug" placeholder="fragnight-05-04-2026"></div>
+        <div><label>Data</label><input type="date" name="event_date" required></div>
+        <div><label>Status</label>
+          <select name="status">
+            <option value="published">published</option>
+            <option value="draft">draft</option>
+            <option value="archived">archived</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div><label>Descrição</label><textarea name="description" placeholder="Se deixar vazio, copia do evento padrão."></textarea></div>
+        <div><label>Texto da home</label><textarea name="hero_text" placeholder="Se deixar vazio, copia do evento padrão."></textarea></div>
+      </div>
+      <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" checked> Criar já como evento ativo</label>
+      <button class="btn" type="submit">Criar evento padrão agora</button>
+    </form>
+    {% else %}
+    <div class="empty-state-note">Defina um evento existente como padrão logo abaixo para habilitar essa criação automática.</div>
+    {% endif %}
+  </div>
 </div>
 
 <div class="cards-2 mt-24">
   {% for event in events %}
   <article class="glass-card">
-    <div class="card-actions"><strong>{{ event.title }}</strong><span class="badge">{{ event.status }}</span></div>
+    <div class="card-actions"><strong>{{ event.title }}</strong><span class="badge {{ 'badge-live' if event.is_active else '' }}">{{ 'Ativo' if event.is_active else event.status }}</span></div>
     <form method="post" class="admin-form compact-form">
       <input type="hidden" name="action" value="update">
       <input type="hidden" name="event_id" value="{{ event.id }}">
@@ -59,17 +96,27 @@
         <div><label>Descrição</label><textarea name="description">{{ event.description or '' }}</textarea></div>
         <div><label>Texto da home</label><textarea name="hero_text">{{ event.hero_text or '' }}</textarea></div>
       </div>
-      <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" {{ 'checked' if event.is_active else '' }}> Evento ativo</label>
+      <div class="actions-inline">
+        <label class="checkbox-line"><input type="checkbox" name="use_default_time" value="1"> Resetar para 22:00 → 06:00</label>
+        <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" {{ 'checked' if event.is_active else '' }}> Evento ativo</label>
+      </div>
       <div class="actions-inline">
         <a class="btn btn-sm" href="{{ url_for('admin.event_groups', event_id=event.id) }}">Máquinas</a>
         <button class="btn btn-sm btn-ghost" type="submit">Salvar alterações</button>
       </div>
     </form>
-    <form method="post" onsubmit="return confirm('Remover evento?')">
-      <input type="hidden" name="action" value="delete">
-      <input type="hidden" name="event_id" value="{{ event.id }}">
-      <button class="btn btn-sm btn-danger mt-16" type="submit">Excluir evento</button>
-    </form>
+    <div class="actions-inline mt-16">
+      <form method="post">
+        <input type="hidden" name="action" value="set_template">
+        <input type="hidden" name="event_id" value="{{ event.id }}">
+        <button class="btn btn-sm {{ 'btn-ghost' if default_template_id|string != event.id|string else '' }}" type="submit">{{ 'Evento padrão' if default_template_id|string == event.id|string else 'Definir como padrão' }}</button>
+      </form>
+      <form method="post" onsubmit="return confirm('Remover evento?')">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="event_id" value="{{ event.id }}">
+        <button class="btn btn-sm btn-danger" type="submit">Excluir evento</button>
+      </form>
+    </div>
   </article>
   {% else %}
   <article class="glass-card"><p>Sem eventos.</p></article>

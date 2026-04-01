@@ -2,7 +2,7 @@
 {% block title %}{{ event.title }}{% endblock %}
 {% block content %}
 <section class="section event-page section-event-detail">
-  <div class="container event-page-container">
+  <div class="container event-page-container page-shell">
     <div class="section-header event-page-header">
       <div>
         <span class="eyebrow">FragNight</span>
@@ -19,6 +19,7 @@
             <div class="machine-sector-info">
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
+                  <span class="config-label">Configurações</span>
                   <h4>{{ section.title }}</h4>
                   <div class="spec-lines">
                     {% for line in section.spec_lines %}
@@ -56,42 +57,44 @@
       </div>
 
       <aside class="checkout-panel event-sidebar">
+        <div class="checkout-header">
+          <h3>Sua reserva</h3>
+          <p>Selecione uma ou várias máquinas.</p>
+        </div>
+
         <div class="event-meta-box event-meta-inline event-info-card">
           <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
           {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
           {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
         </div>
 
-        <div class="checkout-header">
-          <h3>Sua reserva</h3>
-          <p>Selecione uma ou várias máquinas.</p>
-        </div>
-
         <button class="btn btn-ghost full map-trigger map-trigger-outline" type="button" data-open-map>Ver mapa das máquinas</button>
 
         <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
 
-        <div class="form-grid">
-          <div>
-            <label>Nome do pagador</label>
-            <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+        <div class="checkout-payment-block">
+          <div class="form-grid">
+            <div>
+              <label>Nome do pagador</label>
+              <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+            </div>
+            <div>
+              <label>WhatsApp</label>
+              <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
+            </div>
           </div>
-          <div>
-            <label>WhatsApp</label>
-            <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
+
+          <div class="checkout-total">
+            <span>Total</span>
+            <strong id="total-price">R$ 0,00</strong>
           </div>
-        </div>
 
-        <div class="checkout-total">
-          <span>Total</span>
-          <strong id="total-price">R$ 0,00</strong>
+          {% if current_user.is_authenticated %}
+          <button class="btn full" type="submit">Pagar com Mercado Pago</button>
+          {% else %}
+          <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
+          {% endif %}
         </div>
-
-        {% if current_user.is_authenticated %}
-        <button class="btn full" type="submit">Pagar com Mercado Pago</button>
-        {% else %}
-        <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
-        {% endif %}
       </aside>
     </form>
   </div>
