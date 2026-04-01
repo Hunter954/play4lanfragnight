@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Play4Lan FragNight{% endblock %}
+{% block title %}Play4Lan Frag-Night{% endblock %}
 {% block content %}
 <section class="hero">
   <div class="container hero-grid">
     <div>
       <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
-      <h1>Reserve sua máquina para o <span>FragNight</span> na Play4Lan</h1>
+      <h1>Reserve sua máquina para o <span>Frag-Night</span> na Play4Lan</h1>
       <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha várias máquinas, veja a configuração antes de fazer o pagamento.' }}</p>
       <div class="hero-actions">
         {% if active_event %}
@@ -33,7 +33,7 @@
       <a class="btn full" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Escolher máquinas</a>
       {% else %}
       <h3>Nenhum evento ativo</h3>
-      <p>Cadastre o próximo FragNight no admin para ele aparecer aqui automaticamente.</p>
+      <p>Cadastre o próximo Frag-Night no admin para ele aparecer aqui automaticamente.</p>
       {% endif %}
     </div>
   </div>
@@ -45,7 +45,7 @@
     <div class="section-header">
       <div>
         <span class="eyebrow">Agenda</span>
-        <h2>FragNight cadastrados</h2>
+        <h2>Frag-Night cadastrados</h2>
       </div>
     </div>
     <div class="cards-3">
@@ -53,7 +53,7 @@
       <article class="event-card">
         <div class="event-date">{{ event.event_date.strftime('%d/%m/%Y') }}</div>
         <h3>{{ event.title }}</h3>
-        <p>{{ event.description or 'Evento FragNight cadastrado no admin.' }}</p>
+        <p>{{ event.description or 'Evento Frag-Night cadastrado no admin.' }}</p>
         <div class="card-actions">
           <span class="badge {{ 'badge-live' if event.is_active else '' }}">{{ 'Ativo' if event.is_active else event.status }}</span>
           <a href="{{ url_for('site.event_detail', slug=event.slug) }}">Abrir</a>

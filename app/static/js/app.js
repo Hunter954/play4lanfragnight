@@ -51,35 +51,9 @@ if (machineForm) {
 
 const mapModal = document.getElementById('map-modal');
 if (mapModal) {
-  const viewport = mapModal.querySelector('[data-map-viewport]');
-  const mapImage = mapModal.querySelector('[data-map-image]');
-  const zoomInButton = mapModal.querySelector('[data-zoom-in]');
-  const zoomOutButton = mapModal.querySelector('[data-zoom-out]');
-  const zoomResetButton = mapModal.querySelector('[data-zoom-reset]');
-  let scale = 1;
-  let isDragging = false;
-  let dragStartX = 0;
-  let dragStartY = 0;
-  let startScrollLeft = 0;
-  let startScrollTop = 0;
-
-  function applyZoom(nextScale) {
-    if (!mapImage) return;
-    scale = Math.min(4, Math.max(1, nextScale));
-    mapImage.style.transform = `scale(${scale})`;
-    if (zoomResetButton) {
-      zoomResetButton.textContent = `${Math.round(scale * 100)}%`;
-    }
-  }
-
   function openMap() {
     mapModal.hidden = false;
     document.body.classList.add('modal-open');
-    applyZoom(1);
-    if (viewport) {
-      viewport.scrollTop = 0;
-      viewport.scrollLeft = 0;
-    }
   }
 
   function closeMap() {
@@ -90,43 +64,10 @@ if (mapModal) {
   document.querySelectorAll('[data-open-map]').forEach((button) => {
     button.addEventListener('click', openMap);
   });
+
   document.querySelectorAll('[data-close-map]').forEach((button) => {
     button.addEventListener('click', closeMap);
   });
-
-  if (zoomInButton) zoomInButton.addEventListener('click', () => applyZoom(scale + 0.25));
-  if (zoomOutButton) zoomOutButton.addEventListener('click', () => applyZoom(scale - 0.25));
-  if (zoomResetButton) zoomResetButton.addEventListener('click', () => applyZoom(1));
-
-  if (viewport) {
-    viewport.addEventListener('wheel', (event) => {
-      if (!mapModal.hidden && event.ctrlKey) {
-        event.preventDefault();
-        applyZoom(scale + (event.deltaY < 0 ? 0.2 : -0.2));
-      }
-    }, { passive: false });
-
-    viewport.addEventListener('mousedown', (event) => {
-      if (scale <= 1) return;
-      isDragging = true;
-      dragStartX = event.clientX;
-      dragStartY = event.clientY;
-      startScrollLeft = viewport.scrollLeft;
-      startScrollTop = viewport.scrollTop;
-      viewport.classList.add('is-dragging');
-    });
-
-    window.addEventListener('mousemove', (event) => {
-      if (!isDragging) return;
-      viewport.scrollLeft = startScrollLeft - (event.clientX - dragStartX);
-      viewport.scrollTop = startScrollTop - (event.clientY - dragStartY);
-    });
-
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-      viewport.classList.remove('is-dragging');
-    });
-  }
 
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !mapModal.hidden) {

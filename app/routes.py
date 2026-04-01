@@ -200,7 +200,7 @@ def checkout(slug):
     db.session.commit()
 
     try:
-        pref = create_preference(reservation, f'Reserva FragNight - {event.title}')
+        pref = create_preference(reservation, f'Reserva Frag-Night - {event.title}')
         reservation.payment_reference = pref.get('id') or pref.get('preference_id')
         db.session.commit()
         return redirect(pref.get('init_point', url_for('site.my_reservations', _external=True)))
@@ -273,6 +273,26 @@ def dashboard():
     reservations = Reservation.query.order_by(Reservation.created_at.desc()).limit(10).all()
     total_paid = db.session.query(db.func.coalesce(db.func.sum(Reservation.total_amount), 0)).filter(Reservation.payment_status == 'paid').scalar()
     return render_template('admin/dashboard.html', events=events, reservations=reservations, total_paid=total_paid)
+
+
+
+def delete_event_and_dependencies(event):
+    default_template_id = SiteSetting.get('default_event_template_id', '')
+    if default_template_id and str(default_template_id) == str(event.id):
+        SiteSetting.set('default_event_template_id', '')
+
+    reservations = Reservation.query.filter_by(event_id=event.id).all()
+    reservation_ids = [reservation.id for reservation in reservations]
+
+    if reservation_ids:
+        ReservationItem.query.filter(ReservationItem.reservation_id.in_(reservation_ids)).delete(synchronize_session=False)
+        PaymentLog.query.filter(PaymentLog.reservation_id.in_(reservation_ids)).delete(synchronize_session=False)
+        Reservation.query.filter(Reservation.id.in_(reservation_ids)).delete(synchronize_session=False)
+
+    Machine.query.filter_by(event_id=event.id).delete(synchronize_session=False)
+    MachineGroup.query.filter_by(event_id=event.id).delete(synchronize_session=False)
+    db.session.delete(event)
+
 
 @admin_bp.route('/eventos', methods=['GET', 'POST'])
 @login_required
@@ -375,9 +395,13 @@ def events():
 
         elif action == 'delete':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
-            db.session.delete(event)
-            db.session.commit()
-            flash('Evento removido.', 'success')
+            try:
+                delete_event_and_dependencies(event)
+                db.session.commit()
+                flash('Evento removido.', 'success')
+            except Exception:
+                db.session.rollback()
+                flash('Não foi possível excluir este evento. Verifique se existem reservas ou vínculos pendentes.', 'error')
 
         return redirect(url_for('admin.events'))
 
@@ -577,7 +601,7 @@ def mercadopago_webhook():
             if status == 'approved':
                 items = ', '.join([item.machine.label for item in reservation.items])
                 message = (
-                    f"✅ Novo pagamento aprovado no FragNight\n"
+                    f"✅ Novo pagamento aprovado no Frag-Night\n"
                     f"Evento: {reservation.event.title}\n"
                     f"Cliente: {reservation.payer_name or reservation.user.name}\n"
                     f"Telefone: {reservation.payer_phone or reservation.user.phone or '-'}\n"

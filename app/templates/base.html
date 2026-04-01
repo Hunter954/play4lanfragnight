@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% block title %}Play4Lan FragNight{% endblock %}</title>
+  <title>{% block title %}Play4Lan Frag-Night{% endblock %}</title>
   <meta name="theme-color" content="#0b0b0f">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
@@ -16,7 +16,7 @@
       <nav class="nav">
         <a href="{{ url_for('site.home') }}">Home</a>
         {% if active_event_global %}
-        <a href="{{ url_for('site.event_detail', slug=active_event_global.slug) }}">FragNight</a>
+        <a href="{{ url_for('site.event_detail', slug=active_event_global.slug) }}">Frag-Night</a>
         {% endif %}
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('site.my_reservations') }}">Minhas reservas</a>
