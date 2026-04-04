@@ -25,37 +25,40 @@
           <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
         </div>
 
-        <div class="hero-card-line hero-card-line--schedule">
+        <div class="hero-card-line hero-card-line--schedule hero-card-line--schedule-compact">
           <div>
             <div class="hero-day">{{ item.weekday_label }}</div>
             <div class="hero-datetime">{{ current_event.event_date.strftime('%d/%m/%Y') }}{% if current_event.starts_at %} - {{ current_event.starts_at.strftime('%Hh') }}{% endif %}</div>
           </div>
+          <div class="hero-card-availability-summary">
+            <span>{{ item.available_count }} PCs livres</span>
+          </div>
         </div>
 
-        <div class="hero-details-grid">
-          <div class="hero-info-column">
-            <div class="hero-column-title"><i class="bi bi-info-circle-fill"></i> Informações</div>
-            <div class="hero-info-list">
-              <div><i class="bi bi-pc-display-horizontal"></i><span>{{ item.available_count }} PCs livres</span></div>
-              <div><i class="bi bi-controller"></i><span>Frag Night</span></div>
-              <div><i class="bi bi-credit-card-2-front"></i><span>Pagamento online</span></div>
-            </div>
-          </div>
-
-          <div class="hero-machines-column">
+        <div class="hero-details-grid hero-details-grid--compact">
+          <div class="hero-machines-column hero-machines-column--full">
             <div class="hero-column-title"><i class="bi bi-grid-3x3-gap-fill"></i> Máquinas restantes</div>
             <div class="hero-machine-list">
-              <div class="hero-machine-item">
-                <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
-                <span class="hero-machine-meta">{{ alienware.available_count }} · R$ {{ '%.2f'|format(alienware.price) }}</span>
+              <div class="hero-machine-item hero-machine-item--split">
+                <div class="hero-machine-main">
+                  <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
+                  <span class="hero-machine-stock">{{ alienware.available_count }} disponíveis</span>
+                </div>
+                <span class="hero-machine-price">R$ {{ '%.2f'|format(alienware.price) }}</span>
               </div>
-              <div class="hero-machine-item">
-                <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--dell"></span> PC Dell</span>
-                <span class="hero-machine-meta">{{ dell.available_count }} · R$ {{ '%.2f'|format(dell.price) }}</span>
+              <div class="hero-machine-item hero-machine-item--split">
+                <div class="hero-machine-main">
+                  <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--dell"></span> PC Dell</span>
+                  <span class="hero-machine-stock">{{ dell.available_count }} disponíveis</span>
+                </div>
+                <span class="hero-machine-price">R$ {{ '%.2f'|format(dell.price) }}</span>
               </div>
-              <div class="hero-machine-item">
-                <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
-                <span class="hero-machine-meta">{{ gamer.available_count }} · R$ {{ '%.2f'|format(gamer.price) }}</span>
+              <div class="hero-machine-item hero-machine-item--split">
+                <div class="hero-machine-main">
+                  <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
+                  <span class="hero-machine-stock">{{ gamer.available_count }} disponíveis</span>
+                </div>
+                <span class="hero-machine-price">R$ {{ '%.2f'|format(gamer.price) }}</span>
               </div>
             </div>
           </div>

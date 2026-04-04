@@ -893,3 +893,37 @@ body::after{
   .hero-machine-item{flex-wrap:nowrap}
   .hero-machine-name,.hero-machine-meta{font-size:.95rem}
 }
+
+/* ===== April 2026 refinement patch 2 ===== */
+.hero-card-line--schedule-compact{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.hero-card-availability-summary{display:grid;gap:4px;justify-items:end;text-align:right;flex:0 0 auto}
+.hero-card-availability-summary span{font-size:1rem;font-weight:800;color:#dce8ff;white-space:nowrap}
+.hero-details-grid--compact{display:block;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.08);border-bottom:none}
+.hero-machines-column--full{padding-left:0;border-left:none}
+.hero-column-title{justify-content:flex-start}
+.hero-machine-list{gap:10px}
+.hero-machine-item--split{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:10px 12px}
+.hero-machine-main{display:grid;gap:3px;min-width:0}
+.hero-machine-name{display:flex;align-items:center;gap:8px;min-width:0;padding-right:0;overflow:visible;text-overflow:clip}
+.hero-machine-stock{font-size:.88rem;line-height:1.2;color:#9fb6ea;font-weight:700;padding-left:26px;white-space:nowrap}
+.hero-machine-price{justify-self:end;font-size:1rem;line-height:1;font-weight:800;color:#f3f6ff;white-space:nowrap}
+.hero-machine-meta{display:none}
+.hero-card-reservation-v2 .btn.full{margin-top:2px}
+
+.footer-play4lan--with-logo{display:grid;grid-template-columns:170px 1fr;gap:30px;align-items:center}
+.footer-brand-mark{display:flex;align-items:center;justify-content:flex-start}
+.footer-brand-mark img{width:140px;height:auto;opacity:.96}
+.footer-unit--plain{padding:0;background:transparent;border:none;border-radius:0;box-shadow:none}
+.footer-unit--plain a{margin-top:8px}
+
+@media (max-width: 1024px){
+  .footer-play4lan--with-logo{grid-template-columns:1fr;gap:18px}
+  .footer-brand-mark{justify-content:flex-start}
+}
+@media (max-width: 720px){
+  .hero-card-line--schedule-compact{align-items:flex-start}
+  .hero-card-availability-summary{justify-items:start;text-align:left}
+  .hero-machine-item--split{grid-template-columns:1fr;gap:8px}
+  .hero-machine-price{justify-self:start}
+  .hero-machine-stock{padding-left:26px}
+}
