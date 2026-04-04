@@ -30,7 +30,6 @@
               {% endif %}
             </div>
           </div>
-          <a class="btn btn-sm nav-logout-btn" href="{{ url_for('auth.logout') }}">Sair</a>
         {% else %}
           <a href="{{ url_for('auth.login') }}">Entrar</a>
           <a class="btn btn-sm" href="{{ url_for('auth.register') }}">Criar conta</a>

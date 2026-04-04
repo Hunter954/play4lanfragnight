@@ -201,15 +201,34 @@ def event_detail(slug):
     ).all()
     unavailable_machine_ids = {row[0] for row in reserved_rows}
     sections = build_machine_sections(groups, unavailable_machine_ids)
-    return render_template('site/event_detail.html', event=event, groups=groups, sections=sections, unavailable_machine_ids=unavailable_machine_ids)
+    weekday_names = {
+        0: 'SEGUNDA-FEIRA',
+        1: 'TERCA-FEIRA',
+        2: 'QUARTA-FEIRA',
+        3: 'QUINTA-FEIRA',
+        4: 'SEXTA-FEIRA',
+        5: 'SABADO',
+        6: 'DOMINGO',
+    }
+    total_available_count = sum(section['available_count'] for section in sections)
+    weekday_label = weekday_names.get(event.event_date.weekday(), event.event_date.strftime('%A').upper())
+    return render_template(
+        'site/event_detail.html',
+        event=event,
+        groups=groups,
+        sections=sections,
+        unavailable_machine_ids=unavailable_machine_ids,
+        total_available_count=total_available_count,
+        weekday_label=weekday_label,
+    )
 
 @site_bp.route('/checkout/<slug>', methods=['POST'])
 @login_required
 def checkout(slug):
     event = FragNightEvent.query.filter_by(slug=slug).first_or_404()
     machine_ids = request.form.getlist('machine_ids')
-    payer_name = request.form.get('payer_name') or current_user.name
-    payer_phone = request.form.get('payer_phone') or current_user.phone
+    payer_name = current_user.name
+    payer_phone = current_user.phone
 
     if not machine_ids:
         flash('Selecione pelo menos uma máquina.', 'error')

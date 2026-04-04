@@ -11,6 +11,22 @@
       </div>
     </div>
 
+    <div class="event-hero-summary-card">
+      <div class="event-hero-summary-card__top">
+        <strong>PLAY4LAN - VILA A</strong>
+        <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
+      </div>
+      <div class="event-hero-summary-card__body">
+        <div class="event-hero-summary-card__primary">
+          <div class="event-hero-summary-card__day">{{ weekday_label }}</div>
+          <div class="event-hero-summary-card__datetime">{{ event.event_date.strftime('%d/%m/%Y') }}{% if event.starts_at %} - {{ event.starts_at.strftime('%Hh') }}{% endif %}</div>
+        </div>
+        <div class="event-hero-summary-card__meta">
+          <span>{{ total_available_count }} PCs livres</span>
+        </div>
+      </div>
+    </div>
+
     <form method="post" action="{{ url_for('site.checkout', slug=event.slug) }}" id="machine-form" class="event-detail-grid">
       <div class="event-left-column">
         <div class="event-sectors-stack">
@@ -20,11 +36,11 @@
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
                   <div class="section-mini-top">
-                    <span class="config-label"><i class="bi bi-cpu"></i> Configurações</span>
                     <span class="section-availability-pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
                       <i class="bi bi-pc-display"></i>
                       {{ section.available_count }} de {{ section.total_count }} disponíveis
                     </span>
+                    <span class="config-label"><i class="bi bi-cpu"></i> Configurações</span>
                   </div>
                   <div class="spec-lines">
                     {% for line in section.spec_lines %}
@@ -33,6 +49,7 @@
                   </div>
                   <div class="spec-footer-row">
                     <div class="spec-price">Valor por máquina: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+                    <div class="spec-reserved-count"><i class="bi bi-grid-3x3-gap"></i> {{ section.available_count }} restantes</div>
                     <div class="spec-reserved-count"><i class="bi bi-people"></i> {{ section.reserved_count }} reservadas</div>
                   </div>
                 </div>
@@ -45,8 +62,7 @@
                   <span class="cinema-section-title__text">{{ section.title }}</span>
                   {% if section.key == 'sala_gamer' %}<span class="brand-icon brand-icon--white brand-icon--alienware brand-icon--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-icon brand-icon--white brand-icon--dell brand-icon--lg"></span>{% else %}<i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--white brand-icon--lg"></i>{% endif %}
                 </h3>
-                <p>Máquinas restantes: {{ section.available_count }}</p>
-              </div>
+                              </div>
               <div class="cinema-machine-grid sector-grid-{{ section.key }}">
                 {% for machine in section.machines %}
                 {% set unavailable = machine.id in unavailable_machine_ids %}
@@ -90,11 +106,11 @@
           <div class="form-grid">
             <div>
               <label>Nome do pagador</label>
-              <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+              <input type="text" name="payer_name" value="{{ current_user.name if current_user.is_authenticated else '' }}" readonly required>
             </div>
             <div>
               <label>WhatsApp</label>
-              <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" required>
+              <input type="text" name="payer_phone" value="{{ current_user.phone if current_user.is_authenticated else '' }}" placeholder="5545999999999" readonly required>
             </div>
           </div>
 
