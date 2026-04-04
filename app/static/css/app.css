@@ -690,3 +690,40 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
   .hero-card-meta-grid{grid-template-columns:1fr}
   .section-event-detail .section-mini-top,.section-event-detail .spec-footer-row{align-items:flex-start}
 }
+
+
+/* ===== Brand marks + home reservation cards ===== */
+.brand-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;background-repeat:no-repeat;background-position:center;background-size:contain;vertical-align:middle}
+.brand-mark--alienware{width:18px;height:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c9f7ff'/%3E%3Cstop offset='1' stop-color='%236fc9ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='32' cy='31' rx='20' ry='16' fill='none' stroke='url(%23g)' stroke-width='4'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%23c9f7ff'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%23c9f7ff'/%3E%3Cpath d='M18 21 10 14M46 21l8-7' stroke='%236fc9ff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E")}
+.brand-mark--dell{width:18px;height:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%2399d5ff' stroke-width='4'/%3E%3Ctext x='32' y='38' font-size='17' text-anchor='middle' fill='%2399d5ff' font-family='Arial,Helvetica,sans-serif' font-weight='700'%3EDELL%3C/text%3E%3C/svg%3E")}
+.brand-mark--lg{width:24px;height:24px}
+.brand-mark--gamer{font-size:1.2rem;color:#7ecbff}
+.me-2{margin-right:.5rem}
+.hero-card-reservation{display:grid;gap:16px;padding:24px 24px 22px}
+.hero-card-line{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.hero-card-line--top strong{font-size:1.05rem;letter-spacing:.04em;color:#fff}
+.hero-open-status{display:inline-flex;align-items:center;gap:8px;color:#fff;font-weight:700}
+.status-dot{width:8px;height:8px;border-radius:999px;background:#fff;box-shadow:0 0 0 3px rgba(21,117,255,.12)}
+.hero-day{font-size:1.35rem;font-weight:900;letter-spacing:.03em;color:#fff}
+.hero-datetime{margin-top:6px;color:#f0f4ff;font-size:1.15rem;font-weight:700}
+.hero-stats-row{display:flex;flex-wrap:wrap;gap:18px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);color:#f3f7ff}
+.hero-stats-row span{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.hero-stats-row i{color:#ffbf52}
+.hero-stats-row .bi-controller{color:#9d8cff}
+.hero-remaining-box{display:grid;gap:10px}
+.hero-remaining-label{font-size:.92rem;color:#99a7c7;text-transform:uppercase;letter-spacing:.08em}
+.hero-remaining-list{display:flex;flex-wrap:wrap;gap:18px;color:#fff}
+.hero-remaining-list span{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.hero-remaining-list i{color:#7ecbff}
+
+/* ===== Event detail title row ===== */
+.cinema-section-title--with-icon{display:flex;align-items:center;justify-content:center;gap:12px}
+.cinema-section-title__text{display:inline-block}
+.sector-stage-heading p{margin:6px 0 0;color:#b8c4e2;font-weight:700}
+.event-info-card strong i{margin-right:10px}
+
+@media (max-width: 720px){
+  .hero-card-reservation{padding:18px}
+  .hero-card-line{align-items:flex-start;flex-direction:column}
+  .hero-stats-row,.hero-remaining-list{gap:12px}
+}

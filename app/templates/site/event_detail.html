@@ -41,8 +41,11 @@
 
             <div class="machine-sector-stage">
               <div class="sector-stage-heading">
-                <h3 class="cinema-section-title">{{ section.title }}</h3>
-                <p>{{ section.available_count }} PCs aguardando reserva</p>
+                <h3 class="cinema-section-title cinema-section-title--with-icon">
+                  <span class="cinema-section-title__text">{{ section.title }}</span>
+                  {% if section.key == 'sala_gamer' %}<span class="brand-mark brand-mark--alienware brand-mark--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-mark brand-mark--dell brand-mark--lg"></span>{% else %}<i class="bi bi-pc-display brand-mark--gamer"></i>{% endif %}
+                </h3>
+                <p>Máquinas restantes: {{ section.available_count }}</p>
               </div>
               <div class="cinema-machine-grid sector-grid-{{ section.key }}">
                 {% for machine in section.machines %}
@@ -74,9 +77,9 @@
         </div>
 
         <div class="event-meta-box event-meta-inline event-info-card">
-          <div><strong><i class="bi bi-calendar-event"></i> Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
-          {% if event.starts_at %}<div><strong><i class="bi bi-clock"></i> Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
-          {% if event.ends_at %}<div><strong><i class="bi bi-flag"></i> Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
+          <div><strong><i class="bi bi-calendar-event me-2"></i> Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
+          {% if event.starts_at %}<div><strong><i class="bi bi-clock me-2"></i> Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
+          {% if event.ends_at %}<div><strong><i class="bi bi-flag me-2"></i> Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
         </div>
 
         <button class="btn btn-ghost full map-trigger map-trigger-outline" type="button" data-open-map><i class="bi bi-grid-3x3-gap"></i> Ver mapa das máquinas</button>

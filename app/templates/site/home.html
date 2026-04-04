@@ -21,36 +21,34 @@
     <div class="hero-event-stack">
       {% for item in featured_event_summaries %}
       {% set current_event = item.event %}
-      <article class="hero-card hero-card-compact">
-        <div class="hero-card-top hero-card-top--with-badge">
-          <span>Evento ativo</span>
-          {% if current_event.is_active %}<span class="badge badge-live">Ativo</span>{% endif %}
+      <article class="hero-card hero-card-compact hero-card-reservation">
+        <div class="hero-card-line hero-card-line--top">
+          <strong>PLAY4LAN - VILA A</strong>
+          <span class="hero-open-status"><span class="status-dot"></span> Aberto</span>
         </div>
-        <div class="hero-card-title-row">
+
+        <div class="hero-card-line hero-card-line--schedule">
           <div>
-            <h3>{{ current_event.title }}</h3>
-            <p>{{ current_event.description or 'Frag-Night aberto para reservas.' }}</p>
-          </div>
-          <div class="hero-card-icon"><i class="bi bi-pc-display"></i></div>
-        </div>
-        <div class="hero-card-meta-grid">
-          <div>
-            <strong><i class="bi bi-calendar-event"></i> Data</strong>
-            <span>{{ current_event.event_date.strftime('%d/%m/%Y') }}</span>
-          </div>
-          <div>
-            <strong><i class="bi bi-hourglass-split"></i> Restando</strong>
-            <span>{{ item.available_count }} PCs</span>
-          </div>
-          <div>
-            <strong><i class="bi bi-tag"></i> A partir de</strong>
-            <span>R$ {{ '%.2f'|format(item.lowest_price) }}</span>
-          </div>
-          <div>
-            <strong><i class="bi bi-check2-circle"></i> Status</strong>
-            <span>{{ 'Reservas abertas' if current_event.is_active else current_event.status }}</span>
+            <div class="hero-day">{{ item.weekday_label }}</div>
+            <div class="hero-datetime">{{ current_event.event_date.strftime('%d/%m/%Y') }}{% if current_event.starts_at %} - {{ current_event.starts_at.strftime('%Hh') }}{% endif %}</div>
           </div>
         </div>
+
+        <div class="hero-stats-row">
+          <span><i class="bi bi-pc-display-horizontal"></i> <strong>{{ item.available_count }} PCs livres</strong></span>
+          <span><i class="bi bi-coin"></i> <strong>R$ {{ '%.0f'|format(item.lowest_price) }}+</strong></span>
+          <span><i class="bi bi-controller"></i> <strong>Frag Night</strong></span>
+        </div>
+
+        <div class="hero-remaining-box">
+          <span class="hero-remaining-label">Máquinas restantes:</span>
+          <div class="hero-remaining-list">
+            <span><span class="brand-mark brand-mark--alienware"></span> Alienware: {{ item.section_counts.get('Alienware', 0) }}</span>
+            <span><i class="bi bi-pc-display"></i> PC Gamer: {{ item.section_counts.get('PC Gamer', 0) }}</span>
+            <span><span class="brand-mark brand-mark--dell"></span> PC Dell: {{ item.section_counts.get('PC Dell', 0) }}</span>
+          </div>
+        </div>
+
         <a class="btn full" href="{{ url_for('site.event_detail', slug=current_event.slug) }}">Escolher máquinas</a>
       </article>
       {% else %}

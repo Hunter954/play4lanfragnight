@@ -2,6 +2,7 @@ from decimal import Decimal
 import re
 import unicodedata
 from datetime import datetime, timedelta
+import calendar
 from uuid import uuid4
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask import current_app
@@ -68,16 +69,29 @@ def summarize_event(event):
         Reservation.payment_status.in_(['pending', 'paid'])
     ).all()
     unavailable_machine_ids = {row[0] for row in reserved_rows}
+    sections = build_machine_sections(groups, unavailable_machine_ids)
     total_machines = sum(len(group.machines) for group in groups)
     reserved_count = len(unavailable_machine_ids)
     available_count = max(total_machines - reserved_count, 0)
     lowest_price = min((float(group.price) for group in groups), default=0)
+    weekday_names = {
+        0: 'SEGUNDA-FEIRA',
+        1: 'TERCA-FEIRA',
+        2: 'QUARTA-FEIRA',
+        3: 'QUINTA-FEIRA',
+        4: 'SEXTA-FEIRA',
+        5: 'SABADO',
+        6: 'DOMINGO',
+    }
+    section_counts = {section['short_title']: section['available_count'] for section in sections}
     return {
         'event': event,
         'total_machines': total_machines,
         'reserved_count': reserved_count,
         'available_count': available_count,
         'lowest_price': lowest_price,
+        'weekday_label': weekday_names.get(event.event_date.weekday(), event.event_date.strftime('%A').upper()),
+        'section_counts': section_counts,
     }
 
 
