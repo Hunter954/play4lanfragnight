@@ -2,11 +2,11 @@
 {% block title %}Play4Lan Frag-Night{% endblock %}
 {% block content %}
 <section class="hero">
-  <div class="container hero-grid">
+  <div class="container hero-grid hero-grid-events">
     <div>
       <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
       <h1>Reserve sua máquina para o <span>Frag-Night</span> na Play4Lan</h1>
-      <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha várias máquinas, veja a configuração antes de fazer o pagamento.' }}</p>
+      <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha seu setup, veja a configuração completa e garanta seu PC antes da galera.' }}</p>
       <div class="hero-actions">
         {% if active_event %}
         <a class="btn" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Reservar agora</a>
@@ -14,27 +14,54 @@
         <a class="btn btn-ghost" href="#eventos">Ver eventos</a>
       </div>
       <div class="feature-row">
-        <div class="feature-pill">Monitores 360Hz</div>
-        <div class="feature-pill">Pagamento online</div>
+        <div class="feature-pill"><i class="bi bi-display"></i> Monitores 360Hz</div>
+        <div class="feature-pill"><i class="bi bi-credit-card-2-front"></i> Pagamento online</div>
       </div>
     </div>
-    <div class="hero-card">
-      <div class="hero-card-top hero-card-top--with-badge">
-        <span>Evento ativo</span>
-        {% if active_event and active_event.is_active %}<span class="badge badge-live">Ativo</span>{% endif %}
-      </div>
-      {% if active_event %}
-      <h3>{{ active_event.title }}</h3>
-      <p>{{ active_event.description }}</p>
-      <div class="info-list">
-        <div><strong>Data</strong><span>{{ active_event.event_date.strftime('%d/%m/%Y') }}</span></div>
-        <div><strong>Status</strong><span>{{ active_event.status }}</span></div>
-      </div>
-      <a class="btn full" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Escolher máquinas</a>
+    <div class="hero-event-stack">
+      {% for item in featured_event_summaries %}
+      {% set current_event = item.event %}
+      <article class="hero-card hero-card-compact">
+        <div class="hero-card-top hero-card-top--with-badge">
+          <span>Evento ativo</span>
+          {% if current_event.is_active %}<span class="badge badge-live">Ativo</span>{% endif %}
+        </div>
+        <div class="hero-card-title-row">
+          <div>
+            <h3>{{ current_event.title }}</h3>
+            <p>{{ current_event.description or 'Frag-Night aberto para reservas.' }}</p>
+          </div>
+          <div class="hero-card-icon"><i class="bi bi-pc-display"></i></div>
+        </div>
+        <div class="hero-card-meta-grid">
+          <div>
+            <strong><i class="bi bi-calendar-event"></i> Data</strong>
+            <span>{{ current_event.event_date.strftime('%d/%m/%Y') }}</span>
+          </div>
+          <div>
+            <strong><i class="bi bi-hourglass-split"></i> Restando</strong>
+            <span>{{ item.available_count }} PCs</span>
+          </div>
+          <div>
+            <strong><i class="bi bi-tag"></i> A partir de</strong>
+            <span>R$ {{ '%.2f'|format(item.lowest_price) }}</span>
+          </div>
+          <div>
+            <strong><i class="bi bi-check2-circle"></i> Status</strong>
+            <span>{{ 'Reservas abertas' if current_event.is_active else current_event.status }}</span>
+          </div>
+        </div>
+        <a class="btn full" href="{{ url_for('site.event_detail', slug=current_event.slug) }}">Escolher máquinas</a>
+      </article>
       {% else %}
-      <h3>Nenhum evento ativo</h3>
-      <p>Cadastre o próximo Frag-Night no admin para ele aparecer aqui automaticamente.</p>
-      {% endif %}
+      <article class="hero-card hero-card-compact">
+        <div class="hero-card-top hero-card-top--with-badge">
+          <span>Eventos</span>
+        </div>
+        <h3>Nenhum evento ativo</h3>
+        <p>Cadastre o próximo Frag-Night no admin para ele aparecer aqui automaticamente.</p>
+      </article>
+      {% endfor %}
     </div>
   </div>
 </section>

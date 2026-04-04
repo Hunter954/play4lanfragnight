@@ -19,31 +19,42 @@
             <div class="machine-sector-info">
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
-                  <h4>{{ section.title }}</h4>
-                  <span class="config-label">Configurações</span>
+                  <div class="section-mini-top">
+                    <span class="config-label"><i class="bi bi-cpu"></i> Configurações</span>
+                    <span class="section-availability-pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
+                      <i class="bi bi-pc-display"></i>
+                      {{ section.available_count }} de {{ section.total_count }} disponíveis
+                    </span>
+                  </div>
                   <div class="spec-lines">
                     {% for line in section.spec_lines %}
                     <div>{{ line }}</div>
                     {% endfor %}
                   </div>
-                  <div class="spec-price">Valor por máquina: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+                  <div class="spec-footer-row">
+                    <div class="spec-price">Valor por máquina: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+                    <div class="spec-reserved-count"><i class="bi bi-people"></i> {{ section.reserved_count }} reservadas</div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="machine-sector-stage">
-              <h3 class="cinema-section-title">{{ section.title }}</h3>
+              <div class="sector-stage-heading">
+                <h3 class="cinema-section-title">{{ section.title }}</h3>
+                <p>{{ section.available_count }} PCs aguardando reserva</p>
+              </div>
               <div class="cinema-machine-grid sector-grid-{{ section.key }}">
                 {% for machine in section.machines %}
                 {% set unavailable = machine.id in unavailable_machine_ids %}
-                <label class="machine-seat {{ 'is-unavailable' if unavailable else '' }}" style="--group-color: {{ section.group.color }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs-html="{{ section.specs_html|replace('"', '&quot;') }}">
+                <label class="machine-seat {{ 'is-unavailable' if unavailable else 'is-available' }}" data-price="{{ section.group.price }}" data-machine-label="{{ machine.label }}" data-specs-html="{{ section.specs_html|replace('"', '&quot;') }}">
                   <input type="checkbox" name="machine_ids" value="{{ machine.id }}" {% if unavailable %}disabled{% endif %}>
                   <span class="seat-monitor">
                     <span class="machine-number">{{ machine.label }}</span>
                   </span>
                   <span class="seat-stand"></span>
                   <span class="machine-tooltip">
-                    <strong>{{ section.title }}</strong>
+                    <strong><i class="bi bi-pc-display"></i> PC {{ machine.label }}</strong>
                     <span class="tooltip-lines">{{ section.specs_html|safe }}</span>
                     <small>Valor: R$ {{ '%.2f'|format(section.group.price) }}</small>
                   </span>
@@ -63,12 +74,12 @@
         </div>
 
         <div class="event-meta-box event-meta-inline event-info-card">
-          <div><strong>Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
-          {% if event.starts_at %}<div><strong>Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
-          {% if event.ends_at %}<div><strong>Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
+          <div><strong><i class="bi bi-calendar-event"></i> Data</strong><span>{{ event.event_date.strftime('%d/%m/%Y') }}</span></div>
+          {% if event.starts_at %}<div><strong><i class="bi bi-clock"></i> Início</strong><span>{{ event.starts_at.strftime('%H:%M') }}</span></div>{% endif %}
+          {% if event.ends_at %}<div><strong><i class="bi bi-flag"></i> Fim</strong><span>{{ event.ends_at.strftime('%H:%M') }}</span></div>{% endif %}
         </div>
 
-        <button class="btn btn-ghost full map-trigger map-trigger-outline" type="button" data-open-map>Ver mapa das máquinas</button>
+        <button class="btn btn-ghost full map-trigger map-trigger-outline" type="button" data-open-map><i class="bi bi-grid-3x3-gap"></i> Ver mapa das máquinas</button>
 
         <div id="selected-machines" class="selected-list">Nenhuma máquina selecionada.</div>
 
@@ -90,9 +101,9 @@
           </div>
 
           {% if current_user.is_authenticated %}
-          <button class="btn full" type="submit">Pagar com Mercado Pago</button>
+          <button class="btn full" type="submit"><i class="bi bi-credit-card-2-front"></i> Pagar com Mercado Pago</button>
           {% else %}
-          <a class="btn full" href="{{ url_for('auth.login') }}">Entre para reservar</a>
+          <a class="btn full" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Entre para reservar</a>
           {% endif %}
         </div>
       </aside>

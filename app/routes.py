@@ -28,10 +28,10 @@ FIXED_LAYOUTS = {
 }
 
 SECTION_META = {
-    'sala_gamer': {'title': 'SALA GAMER', 'order': 1},
-    'fora_meio': {'title': 'FORA MEIO', 'order': 2},
-    'fora_parede': {'title': 'FORA PAREDE', 'order': 3},
-    'outros': {'title': 'OUTROS', 'order': 99},
+    'sala_gamer': {'title': 'SALA ALIENWARE', 'order': 1, 'short_title': 'Alienware'},
+    'fora_meio': {'title': 'PC GAMER', 'order': 2, 'short_title': 'PC Gamer'},
+    'fora_parede': {'title': 'PC DELL', 'order': 3, 'short_title': 'PC Dell'},
+    'outros': {'title': 'OUTROS', 'order': 99, 'short_title': 'Outros'},
 }
 
 def split_location_label(value):
@@ -60,7 +60,29 @@ def format_specs_lines(specs):
     return lines or ['Configuração não cadastrada.']
 
 
-def build_machine_sections(groups):
+
+def summarize_event(event):
+    groups = MachineGroup.query.filter_by(event_id=event.id).all()
+    reserved_rows = db.session.query(ReservationItem.machine_id).join(Reservation).filter(
+        Reservation.event_id == event.id,
+        Reservation.payment_status.in_(['pending', 'paid'])
+    ).all()
+    unavailable_machine_ids = {row[0] for row in reserved_rows}
+    total_machines = sum(len(group.machines) for group in groups)
+    reserved_count = len(unavailable_machine_ids)
+    available_count = max(total_machines - reserved_count, 0)
+    lowest_price = min((float(group.price) for group in groups), default=0)
+    return {
+        'event': event,
+        'total_machines': total_machines,
+        'reserved_count': reserved_count,
+        'available_count': available_count,
+        'lowest_price': lowest_price,
+    }
+
+
+def build_machine_sections(groups, unavailable_machine_ids=None):
+    unavailable_machine_ids = unavailable_machine_ids or set()
     sections = []
     for group in groups:
         section_key, display_label = split_location_label(group.location_label or group.name)
@@ -78,14 +100,20 @@ def build_machine_sections(groups):
             ordered_machines.extend(remainder)
         spec_lines = format_specs_lines(group.specs)
         specs_html = '<br>'.join(spec_lines)
+        total_count = len(ordered_machines)
+        available_count = sum(1 for machine in ordered_machines if machine.id not in unavailable_machine_ids)
         sections.append({
             'key': section_key,
             'title': SECTION_META.get(section_key, SECTION_META['outros'])['title'],
+            'short_title': SECTION_META.get(section_key, SECTION_META['outros'])['short_title'],
             'display_label': display_label or group.name,
             'group': group,
             'machines': ordered_machines,
             'spec_lines': spec_lines,
             'specs_html': specs_html,
+            'total_count': total_count,
+            'available_count': available_count,
+            'reserved_count': max(total_count - available_count, 0),
         })
     sections.sort(key=lambda item: (SECTION_META.get(item['key'], SECTION_META['outros'])['order'], item['group'].id))
     return sections
@@ -135,7 +163,9 @@ def clone_event_groups(source_event, target_event):
 def home():
     events = FragNightEvent.query.filter_by(status='published').order_by(FragNightEvent.event_date.desc()).all()
     active_event = FragNightEvent.query.filter_by(is_active=True).first()
-    return render_template('site/home.html', events=events, active_event=active_event)
+    featured_events = sorted(events, key=lambda event: (not event.is_active, event.event_date))[:2]
+    featured_event_summaries = [summarize_event(event) for event in featured_events]
+    return render_template('site/home.html', events=events, active_event=active_event, featured_event_summaries=featured_event_summaries)
 
 @site_bp.route('/evento/<slug>')
 def event_detail(slug):
@@ -146,7 +176,7 @@ def event_detail(slug):
         Reservation.payment_status.in_(['pending', 'paid'])
     ).all()
     unavailable_machine_ids = {row[0] for row in reserved_rows}
-    sections = build_machine_sections(groups)
+    sections = build_machine_sections(groups, unavailable_machine_ids)
     return render_template('site/event_detail.html', event=event, groups=groups, sections=sections, unavailable_machine_ids=unavailable_machine_ids)
 
 @site_bp.route('/checkout/<slug>', methods=['POST'])
@@ -494,7 +524,7 @@ def event_groups(event_id):
             flash('Grupo removido.', 'success')
         return redirect(url_for('admin.event_groups', event_id=event.id))
     groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
-    sections = build_machine_sections(groups)
+    sections = build_machine_sections(groups, unavailable_machine_ids)
     return render_template('admin/event_groups.html', event=event, groups=groups, sections=sections)
 
 @admin_bp.route('/vendas')

@@ -5,7 +5,7 @@
   <div>
     <span class="eyebrow">Máquinas</span>
     <h1>{{ event.title }}</h1>
-    <p>Cadastre cada bloco no mapa fixo: Sala Gamer, Fora Meio e Fora Parede.</p>
+    <p>Cadastre cada bloco no mapa fixo: Sala Alienware, PC Gamer e PC Dell.</p>
   </div>
 </div>
 
@@ -13,13 +13,13 @@
   <form method="post" class="admin-form">
     <input type="hidden" name="action" value="create_group">
     <div class="form-grid form-grid-3">
-      <div><label>Nome do grupo</label><input type="text" name="name" placeholder="Sala Gamer 360Hz" required></div>
+      <div><label>Nome do grupo</label><input type="text" name="name" placeholder="Sala Alienware 360Hz" required></div>
       <div>
         <label>Mapa fixo</label>
         <select name="layout_key">
-          <option value="sala_gamer">Sala Gamer (21 a 30)</option>
-          <option value="fora_meio">Fora Meio (06 a 15)</option>
-          <option value="fora_parede">Fora Parede (01 a 05 e 16 a 20)</option>
+          <option value="sala_gamer">Sala Alienware (21 a 30)</option>
+          <option value="fora_meio">PC Gamer (06 a 15)</option>
+          <option value="fora_parede">PC Dell (01 a 05 e 16 a 20)</option>
           <option value="">Sem mapa fixo</option>
         </select>
       </div>
@@ -52,9 +52,9 @@
         <div>
           <label>Mapa fixo</label>
           <select name="layout_key">
-            <option value="sala_gamer" {{ 'selected' if section_key=='sala_gamer' else '' }}>Sala Gamer</option>
-            <option value="fora_meio" {{ 'selected' if section_key=='fora_meio' else '' }}>Fora Meio</option>
-            <option value="fora_parede" {{ 'selected' if section_key=='fora_parede' else '' }}>Fora Parede</option>
+            <option value="sala_gamer" {{ 'selected' if section_key=='sala_gamer' else '' }}>Sala Alienware</option>
+            <option value="fora_meio" {{ 'selected' if section_key=='fora_meio' else '' }}>PC Gamer</option>
+            <option value="fora_parede" {{ 'selected' if section_key=='fora_parede' else '' }}>PC Dell</option>
             <option value="" {{ 'selected' if not section_key or section_key=='outros' else '' }}>Sem mapa fixo</option>
           </select>
         </div>

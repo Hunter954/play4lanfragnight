@@ -641,3 +641,52 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
   .map-modal__dialog--image{padding:12px;}
     .map-modal__viewport{max-height:78vh;}
 }
+
+/* ===== Patch Frag-Night reservation UX ===== */
+.hero-grid-events{align-items:start}
+.hero-event-stack{display:grid;gap:18px}
+.hero-card-compact{padding:22px 24px}
+.hero-card-title-row{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:16px;align-items:start}
+.hero-card-title-row h3{margin-bottom:8px}
+.hero-card-title-row p{margin:0;color:var(--muted)}
+.hero-card-icon{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:rgba(0,87,225,.16);border:1px solid rgba(0,87,225,.24);font-size:1.45rem;color:#7eb0ff}
+.hero-card-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 20px}
+.hero-card-meta-grid div{display:grid;gap:6px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.hero-card-meta-grid strong{display:flex;align-items:center;gap:8px;font-size:.82rem;color:#c9d8ff;text-transform:uppercase;letter-spacing:.05em}
+.hero-card-meta-grid span{font-size:1rem;font-weight:700;color:#fff}
+.feature-pill i,.hero-card-meta-grid i,.event-meta-inline i,.spec-reserved-count i,.section-availability-pill i,.config-label i,.btn i{font-size:.95em}
+
+.section-event-detail .machine-sector-card{overflow:visible;position:relative}
+.section-event-detail .machine-sector-stage,.section-event-detail .cinema-machine-grid{overflow:visible}
+.section-event-detail .section-mini-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.section-event-detail .config-label{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(126,176,255,.12);border:1px solid rgba(126,176,255,.18);color:#dbe8ff;text-transform:none;font-weight:700;letter-spacing:.02em}
+.section-event-detail .section-availability-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.3);color:#9df0ba;font-weight:700;font-size:.92rem}
+.section-event-detail .section-availability-pill.is-sold-out{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#ffb0b0}
+.section-event-detail .spec-footer-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:auto;padding-top:16px}
+.section-event-detail .spec-price{margin-top:0;padding-top:0}
+.section-event-detail .spec-reserved-count{display:inline-flex;align-items:center;gap:8px;color:#cfd9f6;font-size:.95rem}
+.section-event-detail .sector-stage-heading{display:grid;gap:6px;justify-items:center;text-align:center}
+.section-event-detail .sector-stage-heading p{margin:0;color:var(--muted);font-weight:600}
+.section-event-detail .machine-seat{z-index:1}
+.section-event-detail .machine-seat:hover{z-index:20}
+.section-event-detail .machine-seat .seat-monitor{border-color:var(--success);background:linear-gradient(180deg,rgba(8,30,18,.95),rgba(12,24,18,.95));box-shadow:inset 0 0 0 1px rgba(255,255,255,.03),0 10px 24px rgba(0,0,0,.22)}
+.section-event-detail .machine-seat .seat-stand,
+.section-event-detail .machine-seat .seat-stand:after{background:var(--success)}
+.section-event-detail .machine-seat:hover .seat-monitor{border-color:#54e089;background:linear-gradient(180deg,rgba(10,46,25,.98),rgba(10,32,20,.95));box-shadow:0 0 0 2px rgba(34,197,94,.15),0 14px 32px rgba(0,0,0,.32)}
+.section-event-detail .machine-seat.is-selected .seat-monitor{background:linear-gradient(180deg,#0d72ff,#0057e1);border-color:#59a0ff;box-shadow:0 0 0 2px rgba(45,134,255,.18),0 16px 36px rgba(0,87,225,.34),inset 0 0 24px rgba(255,255,255,.08)}
+.section-event-detail .machine-seat.is-selected .seat-stand,
+.section-event-detail .machine-seat.is-selected .seat-stand:after{background:#126cff}
+.section-event-detail .machine-seat.is-unavailable{opacity:1;filter:none}
+.section-event-detail .machine-seat.is-unavailable .seat-monitor{border-color:var(--danger);background:linear-gradient(180deg,rgba(52,12,12,.98),rgba(32,10,10,.96));box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.section-event-detail .machine-seat.is-unavailable .seat-stand,
+.section-event-detail .machine-seat.is-unavailable .seat-stand:after{background:var(--danger)}
+.section-event-detail .machine-seat.is-unavailable .machine-number{color:#ffd2d2}
+.section-event-detail .machine-tooltip{z-index:40}
+
+@media (max-width: 1024px){
+  .hero-grid-events{grid-template-columns:1fr}
+}
+@media (max-width: 720px){
+  .hero-card-meta-grid{grid-template-columns:1fr}
+  .section-event-detail .section-mini-top,.section-event-detail .spec-footer-row{align-items:flex-start}
+}
