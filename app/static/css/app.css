@@ -983,3 +983,73 @@ input[readonly]{cursor:not-allowed;opacity:.92;background:rgba(255,255,255,.04)}
   .section-event-detail .machine-sector-header-outside{align-items:flex-start;flex-direction:column}
   .section-event-detail .machine-sector-header-outside .cinema-section-title{font-size:1.7rem}
 }
+
+/* ===== Correction patch: event reservation layout ===== */
+.section-event-detail .machine-sector-card{
+  align-items:start;
+}
+.section-event-detail .machine-sector-info{
+  display:grid;
+  gap:14px;
+  align-self:start;
+}
+.section-event-detail .section-spec-card,
+.section-event-detail .section-spec-card__inner{
+  height:auto;
+}
+.section-event-detail .section-spec-card{
+  align-self:start;
+}
+.section-event-detail .section-spec-card__inner{
+  display:block;
+}
+.section-event-detail .spec-lines{
+  gap:10px;
+}
+.section-event-detail .spec-price,
+.section-event-detail .spec-price-outside{
+  border-top:none;
+  box-shadow:none;
+}
+.section-event-detail .spec-price-outside{
+  margin-top:0;
+  padding-top:0;
+  padding-left:2px;
+}
+.section-event-detail .machine-sector-stage{
+  padding-top:0;
+  align-content:start;
+  justify-items:start;
+}
+.section-event-detail .machine-sector-header-outside--stage{
+  width:100%;
+  display:grid;
+  gap:12px;
+  justify-items:start;
+  margin:0 0 8px;
+}
+.section-event-detail .machine-sector-header-outside--stage .cinema-section-title{
+  justify-content:flex-start;
+  text-align:left;
+}
+.section-event-detail .machine-sector-header-outside--stage .cinema-section-title__text{
+  text-align:left;
+}
+.section-event-detail .machine-sector-header-outside--stage .machine-sector-header-outside__pill{
+  align-self:start;
+}
+.section-event-detail .cinema-machine-grid{
+  justify-content:flex-start;
+}
+
+@media (max-width: 1180px){
+  .section-event-detail .machine-sector-stage{
+    padding-top:0;
+  }
+}
+
+@media (max-width: 720px){
+  .section-event-detail .machine-sector-header-outside--stage{
+    gap:10px;
+  }
+}

@@ -25,17 +25,6 @@
           {% for section in sections %}
           <section class="machine-sector-card machine-sector-card-{{ section.key }}">
             <div class="machine-sector-info">
-              <div class="machine-sector-header-outside">
-                <h3 class="cinema-section-title cinema-section-title--with-icon cinema-section-title--start">
-                  {% if section.key == 'sala_gamer' %}<span class="brand-icon brand-icon--white brand-icon--alienware brand-icon--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-icon brand-icon--white brand-icon--dell brand-icon--lg"></span>{% else %}<i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--white brand-icon--lg"></i>{% endif %}
-                  <span class="cinema-section-title__text">{{ section.title }}</span>
-                </h3>
-                <span class="section-availability-pill machine-sector-header-outside__pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
-                  <i class="bi bi-pc-display"></i>
-                  {{ section.available_count }} de {{ section.total_count }} disponíveis
-                </span>
-              </div>
-
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
                   <div class="section-mini-top">
@@ -53,7 +42,16 @@
             </div>
 
             <div class="machine-sector-stage">
-              <div class="sector-stage-heading"></div>
+              <div class="machine-sector-header-outside machine-sector-header-outside--stage">
+                <h3 class="cinema-section-title cinema-section-title--with-icon cinema-section-title--start">
+                  {% if section.key == 'sala_gamer' %}<span class="brand-icon brand-icon--white brand-icon--alienware brand-icon--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-icon brand-icon--white brand-icon--dell brand-icon--lg"></span>{% else %}<i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--white brand-icon--lg"></i>{% endif %}
+                  <span class="cinema-section-title__text">{{ section.title }}</span>
+                </h3>
+                <span class="section-availability-pill machine-sector-header-outside__pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
+                  <i class="bi bi-pc-display"></i>
+                  {{ section.available_count }} de {{ section.total_count }} disponíveis
+                </span>
+              </div>
               <div class="cinema-machine-grid sector-grid-{{ section.key }}">
                 {% for machine in section.machines %}
                 {% set unavailable = machine.id in unavailable_machine_ids %}
