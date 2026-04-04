@@ -84,6 +84,15 @@ def summarize_event(event):
         6: 'DOMINGO',
     }
     section_counts = {section['short_title']: section['available_count'] for section in sections}
+    section_map = {
+        section['key']: {
+            'title': section['title'],
+            'short_title': section['short_title'],
+            'available_count': section['available_count'],
+            'price': float(section['group'].price or 0),
+        }
+        for section in sections
+    }
     return {
         'event': event,
         'total_machines': total_machines,
@@ -92,6 +101,7 @@ def summarize_event(event):
         'lowest_price': lowest_price,
         'weekday_label': weekday_names.get(event.event_date.weekday(), event.event_date.strftime('%A').upper()),
         'section_counts': section_counts,
+        'section_map': section_map,
     }
 
 
@@ -538,7 +548,7 @@ def event_groups(event_id):
             flash('Grupo removido.', 'success')
         return redirect(url_for('admin.event_groups', event_id=event.id))
     groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
-    sections = build_machine_sections(groups, unavailable_machine_ids)
+    sections = build_machine_sections(groups, unavailable_machine_ids=set())
     return render_template('admin/event_groups.html', event=event, groups=groups, sections=sections)
 
 @admin_bp.route('/vendas')
