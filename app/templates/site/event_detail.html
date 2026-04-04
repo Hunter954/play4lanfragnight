@@ -3,14 +3,6 @@
 {% block content %}
 <section class="section event-page section-event-detail">
   <div class="container event-page-container page-shell">
-    <div class="section-header event-page-header">
-      <div>
-        <span class="eyebrow">Frag-Night</span>
-        <h1>{{ event.title }}</h1>
-        <p>{{ event.description }}</p>
-      </div>
-    </div>
-
     <div class="event-hero-summary-card">
       <div class="event-hero-summary-card__top">
         <strong>PLAY4LAN - VILA A</strong>
@@ -33,13 +25,20 @@
           {% for section in sections %}
           <section class="machine-sector-card machine-sector-card-{{ section.key }}">
             <div class="machine-sector-info">
+              <div class="machine-sector-header-outside">
+                <h3 class="cinema-section-title cinema-section-title--with-icon cinema-section-title--start">
+                  {% if section.key == 'sala_gamer' %}<span class="brand-icon brand-icon--white brand-icon--alienware brand-icon--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-icon brand-icon--white brand-icon--dell brand-icon--lg"></span>{% else %}<i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--white brand-icon--lg"></i>{% endif %}
+                  <span class="cinema-section-title__text">{{ section.title }}</span>
+                </h3>
+                <span class="section-availability-pill machine-sector-header-outside__pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
+                  <i class="bi bi-pc-display"></i>
+                  {{ section.available_count }} de {{ section.total_count }} disponíveis
+                </span>
+              </div>
+
               <div class="section-spec-card desktop-spec-card">
                 <div class="section-spec-card__inner">
                   <div class="section-mini-top">
-                    <span class="section-availability-pill {{ 'is-sold-out' if section.available_count == 0 else '' }}">
-                      <i class="bi bi-pc-display"></i>
-                      {{ section.available_count }} de {{ section.total_count }} disponíveis
-                    </span>
                     <span class="config-label"><i class="bi bi-cpu"></i> Configurações</span>
                   </div>
                   <div class="spec-lines">
@@ -47,22 +46,14 @@
                     <div>{{ line }}</div>
                     {% endfor %}
                   </div>
-                  <div class="spec-footer-row">
-                    <div class="spec-price">Valor por máquina: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
-                    <div class="spec-reserved-count"><i class="bi bi-grid-3x3-gap"></i> {{ section.available_count }} restantes</div>
-                    <div class="spec-reserved-count"><i class="bi bi-people"></i> {{ section.reserved_count }} reservadas</div>
-                  </div>
                 </div>
               </div>
+
+              <div class="spec-price spec-price-outside">Valor por máquina: <strong>{{ section.group.price|money_br }}</strong></div>
             </div>
 
             <div class="machine-sector-stage">
-              <div class="sector-stage-heading">
-                <h3 class="cinema-section-title cinema-section-title--with-icon cinema-section-title--start">
-                  <span class="cinema-section-title__text">{{ section.title }}</span>
-                  {% if section.key == 'sala_gamer' %}<span class="brand-icon brand-icon--white brand-icon--alienware brand-icon--lg"></span>{% elif section.key == 'fora_parede' %}<span class="brand-icon brand-icon--white brand-icon--dell brand-icon--lg"></span>{% else %}<i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--white brand-icon--lg"></i>{% endif %}
-                </h3>
-                              </div>
+              <div class="sector-stage-heading"></div>
               <div class="cinema-machine-grid sector-grid-{{ section.key }}">
                 {% for machine in section.machines %}
                 {% set unavailable = machine.id in unavailable_machine_ids %}
@@ -75,7 +66,7 @@
                   <span class="machine-tooltip">
                     <strong><i class="bi bi-pc-display"></i> PC {{ machine.label }}</strong>
                     <span class="tooltip-lines">{{ section.specs_html|safe }}</span>
-                    <small>Valor: R$ {{ '%.2f'|format(section.group.price) }}</small>
+                    <small>Valor: {{ section.group.price|money_br }}</small>
                   </span>
                 </label>
                 {% endfor %}

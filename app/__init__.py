@@ -11,6 +11,17 @@ login_manager = LoginManager()
 migrate = Migrate()
 
 
+def format_money_br(value):
+    try:
+        amount = float(value or 0)
+    except (TypeError, ValueError):
+        amount = 0.0
+    formatted = f"{amount:,.2f}"
+    formatted = formatted.replace(',', 'X').replace('.', ',').replace('X', '.')
+    return f"R$ {formatted}"
+
+
+
 def bootstrap_database():
     """Cria tabelas e registros mínimos quando o banco estiver vazio."""
     from .models import User, SiteSetting
@@ -67,6 +78,7 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     migrate.init_app(app, db)
+    app.jinja_env.filters['money_br'] = format_money_br
 
     from .models import User
 

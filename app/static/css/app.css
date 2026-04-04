@@ -958,3 +958,28 @@ input[readonly]{cursor:not-allowed;opacity:.92;background:rgba(255,255,255,.04)}
   .event-hero-summary-card__day{font-size:1.6rem}
   .event-hero-summary-card__datetime{font-size:1rem}
 }
+
+/* ===== Custom patch requested ===== */
+.hero-card-location{font-size:1.02rem !important;font-weight:500 !important;letter-spacing:.08em;color:#2f86ff !important}
+.user-menu__panel a:last-child{margin-top:4px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+
+.section-event-detail .event-hero-summary-card{margin-top:8px}
+.section-event-detail .machine-sector-card{align-items:start}
+.section-event-detail .machine-sector-info{display:grid;gap:14px}
+.section-event-detail .machine-sector-header-outside{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.section-event-detail .machine-sector-header-outside .cinema-section-title{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+.section-event-detail .machine-sector-header-outside__pill{flex:0 0 auto}
+.section-event-detail .section-spec-card__inner{gap:14px}
+.section-event-detail .section-mini-top{justify-content:flex-start}
+.section-event-detail .spec-price-outside{margin-top:0;padding-top:0;padding-left:2px;font-size:1.02rem;color:#dfe9ff}
+.section-event-detail .spec-price-outside strong{color:#fff}
+.section-event-detail .machine-sector-stage{padding-top:46px}
+.section-event-detail .sector-stage-heading{display:none}
+
+@media (max-width: 1180px){
+  .section-event-detail .machine-sector-stage{padding-top:0}
+}
+@media (max-width: 720px){
+  .section-event-detail .machine-sector-header-outside{align-items:flex-start;flex-direction:column}
+  .section-event-detail .machine-sector-header-outside .cinema-section-title{font-size:1.7rem}
+}

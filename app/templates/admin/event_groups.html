@@ -42,7 +42,7 @@
   <article class="glass-card">
     <div class="card-actions">
       <strong>{{ group.name }}</strong>
-      <span class="badge">R$ {{ '%.2f'|format(group.price) }}</span>
+      <span class="badge">{{ group.price|money_br }}</span>
     </div>
     <form method="post" class="admin-form compact-form">
       <input type="hidden" name="action" value="update_group">
@@ -95,7 +95,7 @@
             <div>{{ line }}</div>
             {% endfor %}
           </div>
-          <div class="spec-price">Valor: <strong>R$ {{ '%.2f'|format(section.group.price) }}</strong></div>
+          <div class="spec-price">Valor: <strong>{{ section.group.price|money_br }}</strong></div>
         </div>
       </div>
       <div class="section-machines-wrap">

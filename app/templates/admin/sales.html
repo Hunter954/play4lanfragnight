@@ -18,7 +18,7 @@
         <td>{{ reservation.payer_name or reservation.user.name }}</td>
         <td>{{ reservation.payer_phone or reservation.user.phone }}</td>
         <td>{% for item in reservation.items %}{{ item.machine.label }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
-        <td>R$ {{ '%.2f'|format(reservation.total_amount) }}</td>
+        <td>{{ reservation.total_amount|money_br }}</td>
         <td>{{ reservation.payment_status }}</td>
         <td>{{ reservation.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
       </tr>

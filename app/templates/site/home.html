@@ -21,7 +21,7 @@
       {% set gamer = item.section_map.get('fora_meio', {'available_count': 0, 'price': 0}) %}
       <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2">
         <div class="hero-card-line hero-card-line--top">
-          <strong>PLAY4LAN - VILA A</strong>
+          <strong class="hero-card-location">PLAY4LAN - VILA A</strong>
           <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
         </div>
 
@@ -44,21 +44,21 @@
                   <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
                   <span class="hero-machine-stock">{{ alienware.available_count }} disponíveis</span>
                 </div>
-                <span class="hero-machine-price">R$ {{ '%.2f'|format(alienware.price) }}</span>
+                <span class="hero-machine-price">{{ alienware.price|money_br }}</span>
               </div>
               <div class="hero-machine-item hero-machine-item--split">
                 <div class="hero-machine-main">
                   <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--dell"></span> PC Dell</span>
                   <span class="hero-machine-stock">{{ dell.available_count }} disponíveis</span>
                 </div>
-                <span class="hero-machine-price">R$ {{ '%.2f'|format(dell.price) }}</span>
+                <span class="hero-machine-price">{{ dell.price|money_br }}</span>
               </div>
               <div class="hero-machine-item hero-machine-item--split">
                 <div class="hero-machine-main">
                   <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
                   <span class="hero-machine-stock">{{ gamer.available_count }} disponíveis</span>
                 </div>
-                <span class="hero-machine-price">R$ {{ '%.2f'|format(gamer.price) }}</span>
+                <span class="hero-machine-price">{{ gamer.price|money_br }}</span>
               </div>
             </div>
           </div>

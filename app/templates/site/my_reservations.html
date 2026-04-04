@@ -18,7 +18,7 @@
         </div>
         <p>Código: {{ reservation.code }}</p>
         <p>Máquinas: {% for item in reservation.items %}{{ item.machine.label }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
-        <p>Total: R$ {{ '%.2f'|format(reservation.total_amount) }}</p>
+        <p>Total: {{ reservation.total_amount|money_br }}</p>
         <p>Comprador: {{ reservation.payer_name or reservation.user.name }}</p>
       </article>
       {% else %}
