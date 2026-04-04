@@ -1,18 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}Play4Lan Frag-Night{% endblock %}
 {% block content %}
-<section class="hero">
+<section class="hero hero--luxury-bg">
   <div class="container hero-grid hero-grid-events">
     <div>
       <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
       <h1>Reserve sua máquina para o <span>Frag-Night</span> na Play4Lan</h1>
       <p class="hero-text">{{ active_event.hero_text if active_event else 'Escolha seu setup, veja a configuração completa e garanta seu PC antes da galera.' }}</p>
-      <div class="hero-actions">
-        {% if active_event %}
-        <a class="btn" href="{{ url_for('site.event_detail', slug=active_event.slug) }}">Reservar agora</a>
-        {% endif %}
-        <a class="btn btn-ghost" href="#reserva-destaque">Ver evento ativo</a>
-      </div>
       <div class="feature-row">
         <div class="feature-pill"><i class="bi bi-display"></i> Monitores 360Hz</div>
         <div class="feature-pill"><i class="bi bi-credit-card-2-front"></i> Pagamento online</div>
@@ -28,7 +22,7 @@
       <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2">
         <div class="hero-card-line hero-card-line--top">
           <strong>PLAY4LAN - VILA A</strong>
-          <span class="hero-open-status"><span class="status-dot"></span> Aberto</span>
+          <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
         </div>
 
         <div class="hero-card-line hero-card-line--schedule">
@@ -40,7 +34,7 @@
 
         <div class="hero-details-grid">
           <div class="hero-info-column">
-            <div class="hero-column-title"><i class="bi bi-info-circle-fill"></i> Informações:</div>
+            <div class="hero-column-title"><i class="bi bi-info-circle-fill"></i> Informações</div>
             <div class="hero-info-list">
               <div><i class="bi bi-pc-display-horizontal"></i><span>{{ item.available_count }} PCs livres</span></div>
               <div><i class="bi bi-controller"></i><span>Frag Night</span></div>
@@ -49,7 +43,7 @@
           </div>
 
           <div class="hero-machines-column">
-            <div class="hero-column-title"><i class="bi bi-grid-3x3-gap-fill"></i> Máquinas restantes:</div>
+            <div class="hero-column-title"><i class="bi bi-grid-3x3-gap-fill"></i> Máquinas restantes</div>
             <div class="hero-machine-list">
               <div class="hero-machine-item">
                 <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
@@ -60,7 +54,7 @@
                 <span class="hero-machine-meta">{{ dell.available_count }} · R$ {{ '%.2f'|format(dell.price) }}</span>
               </div>
               <div class="hero-machine-item">
-                <span class="hero-machine-name"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
+                <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
                 <span class="hero-machine-meta">{{ gamer.available_count }} · R$ {{ '%.2f'|format(gamer.price) }}</span>
               </div>
             </div>

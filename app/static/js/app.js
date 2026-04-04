@@ -138,3 +138,39 @@ if (adminModal) {
     });
   });
 }
+
+
+const userMenu = document.querySelector('[data-user-menu]');
+if (userMenu) {
+  const trigger = userMenu.querySelector('[data-user-menu-trigger]');
+  const panel = userMenu.querySelector('[data-user-menu-panel]');
+
+  const closeUserMenu = () => {
+    userMenu.classList.remove('is-open');
+    trigger?.setAttribute('aria-expanded', 'false');
+    panel?.setAttribute('hidden', 'hidden');
+  };
+
+  const openUserMenu = () => {
+    userMenu.classList.add('is-open');
+    trigger?.setAttribute('aria-expanded', 'true');
+    panel?.removeAttribute('hidden');
+  };
+
+  trigger?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (userMenu.classList.contains('is-open')) {
+      closeUserMenu();
+    } else {
+      openUserMenu();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!userMenu.contains(event.target)) closeUserMenu();
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeUserMenu();
+  });
+}

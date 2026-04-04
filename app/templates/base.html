@@ -14,17 +14,23 @@
       <a href="{{ url_for('site.home') }}" class="brand">
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Play4Lan">
       </a>
-      <nav class="nav">
-        <a href="{{ url_for('site.home') }}">Home</a>
-        {% if active_event_global %}
-        <a href="{{ url_for('site.event_detail', slug=active_event_global.slug) }}">Frag-Night</a>
-        {% endif %}
+
+      <nav class="nav nav--clean">
         {% if current_user.is_authenticated %}
-          <a href="{{ url_for('site.my_reservations') }}">Minhas reservas</a>
-          {% if current_user.is_admin %}
-          <a href="{{ url_for('admin.dashboard') }}">Admin</a>
-          {% endif %}
-          <a href="{{ url_for('auth.logout') }}">Sair</a>
+          {% set first_name = (current_user.name or '').strip().split(' ')[0] %}
+          <div class="user-menu" data-user-menu>
+            <button class="user-menu__trigger" type="button" data-user-menu-trigger aria-expanded="false">
+              <span class="user-menu__name">{{ first_name }}</span>
+              <i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="user-menu__panel" data-user-menu-panel hidden>
+              <a href="{{ url_for('site.my_reservations') }}"><i class="bi bi-ticket-perforated"></i> Minhas reservas</a>
+              {% if current_user.is_admin %}
+              <a href="{{ url_for('admin.dashboard') }}"><i class="bi bi-grid-1x2"></i> Painel admin</a>
+              {% endif %}
+            </div>
+          </div>
+          <a class="btn btn-sm nav-logout-btn" href="{{ url_for('auth.logout') }}">Sair</a>
         {% else %}
           <a href="{{ url_for('auth.login') }}">Entrar</a>
           <a class="btn btn-sm" href="{{ url_for('auth.register') }}">Criar conta</a>
@@ -47,10 +53,7 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-play4lan">
-      <div class="footer-brand-block">
-        <img class="footer-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Play4Lan">
-      </div>
+    <div class="container footer-play4lan footer-play4lan--no-logo">
       <div class="footer-addresses">
         <div class="footer-unit">
           <h4>Play4Lan - Vila A</h4>
