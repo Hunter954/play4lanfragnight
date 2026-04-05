@@ -1,9 +1,19 @@
 document.querySelectorAll('.toggle-secret').forEach((button) => {
+  const setSecretButtonState = (isVisible) => {
+    button.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+    button.innerHTML = isVisible
+      ? '<i class="bi bi-eye-slash"></i><span>Ocultar</span>'
+      : '<i class="bi bi-eye"></i><span>Mostrar</span>';
+  };
+
+  setSecretButtonState(false);
+
   button.addEventListener('click', () => {
     const input = button.parentElement.querySelector('.secret-field');
+    if (!input) return;
     const isPassword = input.type === 'password';
     input.type = isPassword ? 'text' : 'password';
-    button.textContent = isPassword ? 'ocultar' : '****';
+    setSecretButtonState(isPassword);
   });
 });
 
@@ -109,15 +119,27 @@ document.querySelectorAll('[data-toggle-panel]').forEach((button) => {
     const panel = panelId ? document.getElementById(panelId) : null;
     if (!panel) return;
     const isHidden = panel.hasAttribute('hidden');
+
+    document.querySelectorAll('[data-toggle-panel]').forEach((otherButton) => {
+      if (otherButton !== button) {
+        otherButton.innerHTML = otherButton.dataset.openLabel || 'Editar';
+      }
+    });
+
     document.querySelectorAll('.admin-event-panel').forEach((item) => {
       if (item !== panel) item.setAttribute('hidden', 'hidden');
     });
+
+    const openLabel = button.dataset.openLabel || 'Editar';
+    const closeLabel = button.dataset.closeLabel || 'Fechar edição';
+
     if (isHidden) {
       panel.removeAttribute('hidden');
-      button.textContent = 'Fechar edição';
+      button.innerHTML = closeLabel;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } else {
       panel.setAttribute('hidden', 'hidden');
-      button.textContent = 'Editar';
+      button.innerHTML = openLabel;
     }
   });
 });

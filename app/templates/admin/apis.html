@@ -1,51 +1,71 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}APIs{% endblock %}
 {% block admin_content %}
-<div class="section-header">
+<div class="admin-page-hero glass-card">
   <div>
     <span class="eyebrow">Integrações</span>
     <h1>Configuração de APIs</h1>
-    <p>Campos sensíveis podem ser mascarados no botão ao lado.</p>
+    <p class="muted-copy">Guarde tudo em um só lugar. Os campos secretos podem ser exibidos ou escondidos no botão ao lado.</p>
   </div>
 </div>
 
-<div class="cards-2">
+<div class="cards-2 admin-cards-fit">
   <div class="glass-card">
-    <h3>Mercado Pago</h3>
-    <form method="post" class="admin-form">
-      <label>Access Token</label>
-      <div class="masked-input"><input class="secret-field" type="password" name="mp_access_token" value="{{ site_settings.get('mp_access_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
-      <label>Public Key</label>
-      <div class="masked-input"><input class="secret-field" type="password" name="mp_public_key" value="{{ site_settings.get('mp_public_key', '') }}"><button type="button" class="toggle-secret">****</button></div>
+    <div class="section-header admin-create-head">
+      <div>
+        <span class="eyebrow">Pagamentos e WhatsApp</span>
+        <h2>Salvar credenciais</h2>
+      </div>
+    </div>
+    <form method="post" class="admin-form admin-form--airy">
+      <div class="admin-field-group">
+        <h3><i class="bi bi-credit-card-2-front"></i> Mercado Pago</h3>
+        <label>Access Token</label>
+        <div class="masked-input"><input class="secret-field" type="password" name="mp_access_token" value="{{ site_settings.get('mp_access_token', '') }}"><button type="button" class="toggle-secret btn btn-ghost btn-sm" aria-pressed="false"><i class="bi bi-eye"></i><span>Mostrar</span></button></div>
+        <label>Public Key</label>
+        <div class="masked-input"><input class="secret-field" type="password" name="mp_public_key" value="{{ site_settings.get('mp_public_key', '') }}"><button type="button" class="toggle-secret btn btn-ghost btn-sm" aria-pressed="false"><i class="bi bi-eye"></i><span>Mostrar</span></button></div>
+      </div>
 
-      <h3 class="mt-24">Z-API</h3>
-      <label>Base URL</label>
-      <input type="text" name="zapi_base_url" value="{{ site_settings.get('zapi_base_url', 'https://api.z-api.io') }}">
-      <label>Instance ID</label>
-      <input type="text" name="zapi_instance_id" value="{{ site_settings.get('zapi_instance_id', '') }}">
-      <label>Instance Token</label>
-      <div class="masked-input"><input class="secret-field" type="password" name="zapi_instance_token" value="{{ site_settings.get('zapi_instance_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
-      <label>Client Token</label>
-      <div class="masked-input"><input class="secret-field" type="password" name="zapi_client_token" value="{{ site_settings.get('zapi_client_token', '') }}"><button type="button" class="toggle-secret">****</button></div>
-      <label>Telefone para notificações</label>
-      <input type="text" name="zapi_notify_phone" value="{{ site_settings.get('zapi_notify_phone', '') }}" placeholder="5545999999999">
-      <button class="btn" type="submit">Salvar integrações</button>
+      <div class="admin-field-group mt-24">
+        <h3><i class="bi bi-whatsapp"></i> Z-API</h3>
+        <label>Base URL</label>
+        <input type="text" name="zapi_base_url" value="{{ site_settings.get('zapi_base_url', 'https://api.z-api.io') }}">
+        <label>Instance ID</label>
+        <input type="text" name="zapi_instance_id" value="{{ site_settings.get('zapi_instance_id', '') }}">
+        <label>Instance Token</label>
+        <div class="masked-input"><input class="secret-field" type="password" name="zapi_instance_token" value="{{ site_settings.get('zapi_instance_token', '') }}"><button type="button" class="toggle-secret btn btn-ghost btn-sm" aria-pressed="false"><i class="bi bi-eye"></i><span>Mostrar</span></button></div>
+        <label>Client Token</label>
+        <div class="masked-input"><input class="secret-field" type="password" name="zapi_client_token" value="{{ site_settings.get('zapi_client_token', '') }}"><button type="button" class="toggle-secret btn btn-ghost btn-sm" aria-pressed="false"><i class="bi bi-eye"></i><span>Mostrar</span></button></div>
+        <label>Telefone para notificações</label>
+        <input type="text" name="zapi_notify_phone" value="{{ site_settings.get('zapi_notify_phone', '') }}" placeholder="5545999999999">
+      </div>
+      <button class="btn" type="submit"><i class="bi bi-check2-circle"></i> Salvar integrações</button>
     </form>
   </div>
 
   <div class="glass-card">
-    <h3>Status da instância Z-API</h3>
-    <p>Use os botões para validar credenciais e buscar o QR code de conexão.</p>
-    <div class="api-actions">
-      <button class="btn btn-ghost" id="btn-zapi-status" type="button">Consultar status</button>
-      <button class="btn" id="btn-zapi-qr" type="button">Buscar QR</button>
+    <div class="section-header admin-create-head">
+      <div>
+        <span class="eyebrow">Status rápido</span>
+        <h2>Testar conexão da Z-API</h2>
+        <p class="muted-copy">Use os botões para validar credenciais e puxar o QR code da instância.</p>
+      </div>
+    </div>
+    <div class="api-actions api-actions--large">
+      <button class="btn btn-ghost" id="btn-zapi-status" type="button"><i class="bi bi-activity"></i> Consultar status</button>
+      <button class="btn" id="btn-zapi-qr" type="button"><i class="bi bi-qr-code-scan"></i> Buscar QR</button>
     </div>
     <pre id="zapi-result" class="api-result">Aguardando ação...</pre>
     <div id="zapi-qr-box" class="qr-box"></div>
 
     <hr class="divider">
-    <h3>Observação importante</h3>
-    <p>O Z-API resolve bem a conexão da instância do WhatsApp por QR no admin. Já login de cliente final via QR não é um fluxo padrão do provedor como OAuth; por isso a base foi separada para permitir evolução futura sem travar o resto do sistema.</p>
+    <div class="admin-sidebar__helper glass-card admin-inline-tip">
+      <div class="admin-sidebar__helper-icon"><i class="bi bi-info-circle"></i></div>
+      <div>
+        <strong>Observação importante</strong>
+        <p>O QR é pensado para conectar a instância do WhatsApp no admin. O login do cliente final por QR pode ser construído depois, sem travar esta etapa.</p>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

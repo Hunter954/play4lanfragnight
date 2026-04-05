@@ -1,31 +1,39 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}Minha conta{% endblock %}
 {% block admin_content %}
-<div class="section-header">
+<div class="admin-page-hero glass-card">
   <div>
     <span class="eyebrow">Administrador</span>
     <h1>Minha conta</h1>
-    <p>Atualize seu e-mail e sua senha de acesso.</p>
+    <p class="muted-copy">Atualize seu e-mail e sua senha de acesso de forma simples e segura.</p>
   </div>
 </div>
 
-<div class="cards-2 single-column">
+<div class="cards-2 admin-cards-fit">
   <div class="glass-card">
-    <form method="post" class="admin-form">
-      <label>Nome</label>
+    <form method="post" class="admin-form admin-form--airy">
+      <label><i class="bi bi-person-badge"></i> Nome</label>
       <input type="text" value="{{ current_user.name }}" disabled>
 
-      <label>Novo e-mail</label>
+      <label><i class="bi bi-envelope"></i> Novo e-mail</label>
       <input type="email" name="email" value="{{ current_user.email }}" required>
 
-      <label>Nova senha</label>
+      <label><i class="bi bi-key"></i> Nova senha</label>
       <input type="password" name="password" placeholder="Deixe em branco para manter a atual">
 
-      <label>Confirmar nova senha</label>
+      <label><i class="bi bi-shield-check"></i> Confirmar nova senha</label>
       <input type="password" name="password_confirm" placeholder="Repita a nova senha">
 
-      <button class="btn" type="submit">Salvar alterações</button>
+      <button class="btn" type="submit"><i class="bi bi-check2-circle"></i> Salvar alterações</button>
     </form>
+  </div>
+
+  <div class="glass-card admin-sidebar__helper admin-inline-tip admin-inline-tip--tall">
+    <div class="admin-sidebar__helper-icon"><i class="bi bi-lock"></i></div>
+    <div>
+      <strong>Dica rápida</strong>
+      <p>Se você trocar a senha, use pelo menos 6 caracteres. Se quiser só alterar o e-mail, deixe os campos de senha vazios.</p>
+    </div>
   </div>
 </div>
 {% endblock %}

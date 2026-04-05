@@ -1,16 +1,73 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="section admin-shell">
-  <div class="container admin-layout">
-    <aside class="admin-sidebar">
-      <h3>Admin</h3>
-      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('admin.events') }}">Eventos</a>
-      <a href="{{ url_for('admin.sales') }}">Vendas</a>
-      <a href="{{ url_for('admin.apis') }}">APIs</a>
-      <a href="{{ url_for('admin.account') }}">Minha conta</a>
+<section class="section admin-shell admin-shell--refined">
+  <div class="container admin-layout admin-layout--refined">
+    <aside class="admin-sidebar admin-sidebar--refined">
+      <div class="admin-sidebar__intro">
+        <span class="eyebrow">PAINEL PLAY4LAN</span>
+        <h2>Admin simples e rápido</h2>
+        <p>Faça tudo em ordem: crie o evento, ajuste as máquinas, acompanhe as vendas e revise integrações.</p>
+      </div>
+
+      <nav class="admin-nav" aria-label="Navegação do painel">
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.dashboard' else '' }}" href="{{ url_for('admin.dashboard') }}">
+          <i class="bi bi-speedometer2"></i>
+          <span>
+            <strong>Visão geral</strong>
+            <small>Resumo do que importa agora</small>
+          </span>
+        </a>
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.events' else '' }}" href="{{ url_for('admin.events') }}">
+          <i class="bi bi-calendar2-week"></i>
+          <span>
+            <strong>Eventos</strong>
+            <small>Crie, edite e deixe ativo</small>
+          </span>
+        </a>
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.event_groups' else '' }}" href="{{ url_for('admin.events') }}">
+          <i class="bi bi-grid-3x3-gap"></i>
+          <span>
+            <strong>Máquinas</strong>
+            <small>Abra um evento e organize o mapa</small>
+          </span>
+        </a>
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.sales' else '' }}" href="{{ url_for('admin.sales') }}">
+          <i class="bi bi-receipt-cutoff"></i>
+          <span>
+            <strong>Vendas</strong>
+            <small>Confira clientes, status e valores</small>
+          </span>
+        </a>
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.apis' else '' }}" href="{{ url_for('admin.apis') }}">
+          <i class="bi bi-plug"></i>
+          <span>
+            <strong>Integrações</strong>
+            <small>Tokens, QR code e conexão</small>
+          </span>
+        </a>
+        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.account' else '' }}" href="{{ url_for('admin.account') }}">
+          <i class="bi bi-person-gear"></i>
+          <span>
+            <strong>Minha conta</strong>
+            <small>E-mail e senha do administrador</small>
+          </span>
+        </a>
+      </nav>
+
+      <div class="admin-sidebar__helper glass-card">
+        <div class="admin-sidebar__helper-icon"><i class="bi bi-lightbulb"></i></div>
+        <div>
+          <strong>Fluxo recomendado</strong>
+          <p>1. Criar evento<br>2. Ajustar máquinas<br>3. Ativar na home<br>4. Conferir vendas</p>
+        </div>
+      </div>
+
+      <div class="admin-sidebar__footer">
+        <a class="btn btn-ghost full" href="{{ url_for('site.home') }}"><i class="bi bi-house-door"></i> Ver site</a>
+      </div>
     </aside>
-    <div class="admin-main">
+
+    <div class="admin-main admin-main--refined">
       {% block admin_content %}{% endblock %}
     </div>
   </div>

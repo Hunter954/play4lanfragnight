@@ -1,25 +1,80 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}Vendas{% endblock %}
 {% block admin_content %}
-<div class="section-header">
+{% set ns = namespace(total_paid=0, paid_count=0) %}
+{% for reservation in reservations %}
+  {% if reservation.payment_status == 'paid' %}
+    {% set ns.total_paid = ns.total_paid + (reservation.total_amount or 0) %}
+    {% set ns.paid_count = ns.paid_count + 1 %}
+  {% endif %}
+{% endfor %}
+<div class="admin-page-hero glass-card">
   <div>
     <span class="eyebrow">Relatórios</span>
     <h1>Compras por Frag-Night</h1>
+    <p class="muted-copy">Confira clientes, máquinas escolhidas e andamento do pagamento sem precisar abrir tela por tela.</p>
   </div>
 </div>
-<div class="glass-card">
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Evento</th><th>Cliente</th><th>WhatsApp</th><th>Máquinas</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+
+<div class="admin-summary-grid">
+  <article class="admin-summary-card glass-card">
+    <div class="admin-summary-card__icon"><i class="bi bi-bag-check"></i></div>
+    <div>
+      <p class="admin-summary-card__label">Total de reservas</p>
+      <div class="metric">{{ reservations|length }}</div>
+      <small>Todas as vendas registradas</small>
+    </div>
+  </article>
+  <article class="admin-summary-card glass-card">
+    <div class="admin-summary-card__icon"><i class="bi bi-cash-stack"></i></div>
+    <div>
+      <p class="admin-summary-card__label">Recebido</p>
+      <div class="metric">{{ ns.total_paid|money_br }}</div>
+      <small>{{ ns.paid_count }} pagamento{{ '' if ns.paid_count == 1 else 's' }} aprovado{{ '' if ns.paid_count == 1 else 's' }}</small>
+    </div>
+  </article>
+  <article class="admin-summary-card glass-card">
+    <div class="admin-summary-card__icon"><i class="bi bi-person-lines-fill"></i></div>
+    <div>
+      <p class="admin-summary-card__label">Leitura rápida</p>
+      <div class="metric">{{ reservations[:5]|length }}</div>
+      <small>As primeiras linhas ajudam a checar o movimento recente</small>
+    </div>
+  </article>
+</div>
+
+<div class="glass-card mt-24">
+  <div class="section-header admin-table-head">
+    <div>
+      <span class="eyebrow">Tabela</span>
+      <h2>Lista de vendas</h2>
+    </div>
+  </div>
+  <div class="table-wrap table-wrap--admin">
+    <table class="admin-table admin-table--sales">
+      <thead>
+        <tr>
+          <th>Evento</th>
+          <th>Cliente</th>
+          <th>WhatsApp</th>
+          <th>Máquinas</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Data</th>
+        </tr>
+      </thead>
       <tbody>
       {% for reservation in reservations %}
       <tr>
-        <td>{{ reservation.event.title }}</td>
+        <td>
+          <strong>{{ reservation.event.title }}</strong>
+          <small>{{ reservation.event.event_date.strftime('%d/%m/%Y') }}</small>
+        </td>
         <td>{{ reservation.payer_name or reservation.user.name }}</td>
         <td>{{ reservation.payer_phone or reservation.user.phone }}</td>
-        <td>{% for item in reservation.items %}{{ item.machine.label }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+        <td>{% for item in reservation.items %}<span class="inline-chip">{{ item.machine.label }}</span>{% endfor %}</td>
         <td>{{ reservation.total_amount|money_br }}</td>
-        <td>{{ reservation.payment_status }}</td>
+        <td><span class="status-badge status-badge--{{ reservation.payment_status|lower|replace('_', '-') }}">{{ 'Pago' if reservation.payment_status == 'paid' else reservation.payment_status }}</span></td>
         <td>{{ reservation.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
       </tr>
       {% else %}
