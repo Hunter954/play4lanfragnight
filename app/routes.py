@@ -91,10 +91,14 @@ def summarize_event(event):
         Reservation.payment_status.in_(['pending', 'paid'])
     ).all()
     unavailable_machine_ids = {row[0] for row in reserved_rows}
-    sections = build_machine_sections(groups, unavailable_machine_ids)
+    disabled_machine_ids = {machine.id for group in groups for machine in group.machines if machine.status == 'disabled'}
+    blocked_machine_ids = unavailable_machine_ids | disabled_machine_ids
+    sections = build_machine_sections(groups, blocked_machine_ids)
     total_machines = sum(len(group.machines) for group in groups)
+    disabled_count = sum(1 for group in groups for machine in group.machines if machine.status == 'disabled')
     reserved_count = len(unavailable_machine_ids)
-    available_count = max(total_machines - reserved_count, 0)
+    unavailable_count = len({machine.id for group in groups for machine in group.machines if machine.status == 'disabled'} | unavailable_machine_ids)
+    available_count = max(total_machines - unavailable_count, 0)
     lowest_price = min((float(group.price) for group in groups), default=0)
     weekday_names = {
         0: 'SEGUNDA-FEIRA',
@@ -119,6 +123,7 @@ def summarize_event(event):
         'event': event,
         'total_machines': total_machines,
         'reserved_count': reserved_count,
+        'disabled_count': disabled_count,
         'available_count': available_count,
         'lowest_price': lowest_price,
         'weekday_label': weekday_names.get(event.event_date.weekday(), event.event_date.strftime('%A').upper()),
@@ -147,7 +152,7 @@ def build_machine_sections(groups, unavailable_machine_ids=None):
         spec_lines = format_specs_lines(group.specs)
         specs_html = '<br>'.join(spec_lines)
         total_count = len(ordered_machines)
-        available_count = sum(1 for machine in ordered_machines if machine.id not in unavailable_machine_ids)
+        available_count = sum(1 for machine in ordered_machines if machine.id not in unavailable_machine_ids and machine.status == 'available')
         sections.append({
             'key': section_key,
             'title': SECTION_META.get(section_key, SECTION_META['outros'])['title'],
@@ -226,10 +231,9 @@ def clone_event_groups(source_event, target_event):
 
 @site_bp.route('/')
 def home():
-    events = FragNightEvent.query.filter_by(status='published').order_by(FragNightEvent.event_date.desc()).all()
-    active_event = FragNightEvent.query.filter_by(is_active=True).first()
-    featured_events = sorted(events, key=lambda event: (not event.is_active, event.event_date))[:2]
-    featured_event_summaries = [summarize_event(event) for event in featured_events]
+    events = FragNightEvent.query.filter_by(status='published', is_active=True).order_by(FragNightEvent.event_date.desc()).all()
+    active_event = events[0] if events else None
+    featured_event_summaries = [summarize_event(event) for event in events]
     return render_template('site/home.html', events=events, active_event=active_event, featured_event_summaries=featured_event_summaries)
 
 @site_bp.route('/evento/<slug>')
@@ -241,7 +245,9 @@ def event_detail(slug):
         Reservation.payment_status.in_(['pending', 'paid'])
     ).all()
     unavailable_machine_ids = {row[0] for row in reserved_rows}
-    sections = build_machine_sections(groups, unavailable_machine_ids)
+    disabled_machine_ids = {machine.id for group in groups for machine in group.machines if machine.status == 'disabled'}
+    blocked_machine_ids = unavailable_machine_ids | disabled_machine_ids
+    sections = build_machine_sections(groups, blocked_machine_ids)
     weekday_names = {
         0: 'SEGUNDA-FEIRA',
         1: 'TERCA-FEIRA',
@@ -258,7 +264,7 @@ def event_detail(slug):
         event=event,
         groups=groups,
         sections=sections,
-        unavailable_machine_ids=unavailable_machine_ids,
+        unavailable_machine_ids=blocked_machine_ids,
         total_available_count=total_available_count,
         weekday_label=weekday_label,
     )
@@ -431,8 +437,6 @@ def events():
             title = build_event_title(event_date_value, request.form.get('title'))
             slug = unique_event_slug(request.form.get('slug') or title)
             starts_at, ends_at = build_default_event_times(event_date_value)
-            if request.form.get('make_active'):
-                FragNightEvent.query.update({'is_active': False})
             event = FragNightEvent(
                 title=title,
                 slug=slug,
@@ -441,7 +445,7 @@ def events():
                 ends_at=ends_at,
                 description=(source_event.description if source_event else request.form.get('description')),
                 hero_text=(source_event.hero_text if source_event else request.form.get('hero_text')),
-                status=request.form.get('status', 'draft'),
+                status=request.form.get('status', 'published'),
                 is_active=bool(request.form.get('make_active'))
             )
             db.session.add(event)
@@ -453,19 +457,23 @@ def events():
 
         elif action == 'update':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
-            event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
+            event_date_raw = (request.form.get('event_date') or '').strip()
+            if not event_date_raw:
+                flash('Escolha a data do frag para salvar.', 'error')
+                return redirect(url_for('admin.events'))
+            try:
+                event_date_value = datetime.strptime(event_date_raw, '%Y-%m-%d').date()
+            except ValueError:
+                flash('Data inválida. Confira o dia informado.', 'error')
+                return redirect(url_for('admin.events'))
             starts_at, ends_at = build_default_event_times(event_date_value)
             event.title = build_event_title(event_date_value, request.form.get('title'))
             event.slug = unique_event_slug(request.form.get('slug') or event.title, current_event_id=event.id)
             event.event_date = event_date_value
             event.starts_at = starts_at
             event.ends_at = ends_at
-            event.status = request.form.get('status', 'draft')
-            if request.form.get('make_active'):
-                FragNightEvent.query.update({'is_active': False})
-                event.is_active = True
-            else:
-                event.is_active = False
+            event.status = request.form.get('status', 'published')
+            event.is_active = bool(request.form.get('make_active'))
             db.session.commit()
             flash('Frag atualizado.', 'success')
 
@@ -477,7 +485,6 @@ def events():
 
         elif action == 'activate':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
-            FragNightEvent.query.update({'is_active': False})
             event.is_active = True
             db.session.commit()
             flash('Evento definido como ativo.', 'success')
@@ -509,11 +516,21 @@ def events():
 def event_groups(event_id):
     admin_required()
     event = FragNightEvent.query.get_or_404(event_id)
+
+    reserved_items = db.session.query(ReservationItem, Reservation).join(Reservation).filter(
+        Reservation.event_id == event.id,
+        Reservation.payment_status.in_(['pending', 'paid'])
+    ).all()
+    reserved_map = {item.machine_id: reservation for item, reservation in reserved_items}
+
     if request.method == 'POST':
         action = request.form.get('action')
 
         if action == 'toggle_machine':
             machine = Machine.query.filter_by(event_id=event.id, id=request.form.get('machine_id')).first_or_404()
+            if machine.id in reserved_map:
+                flash(f'Máquina {machine.label} já está reservada e não pode ser alterada agora.', 'error')
+                return redirect(url_for('admin.event_groups', event_id=event.id))
             machine.status = 'disabled' if machine.status == 'available' else 'available'
             db.session.commit()
             flash(f'Máquina {machine.label} atualizada.', 'success')
@@ -521,17 +538,68 @@ def event_groups(event_id):
         elif action == 'set_group_status':
             group = MachineGroup.query.filter_by(event_id=event.id, id=request.form.get('group_id')).first_or_404()
             target_status = request.form.get('target_status', 'available')
-            Machine.query.filter_by(event_id=event.id, group_id=group.id).update({'status': target_status})
-            db.session.commit()
+            machine_ids_in_group = [machine.id for machine in group.machines if machine.id not in reserved_map]
+            if machine_ids_in_group:
+                Machine.query.filter(Machine.event_id == event.id, Machine.id.in_(machine_ids_in_group)).update({'status': target_status}, synchronize_session=False)
+                db.session.commit()
             flash(f'Disponibilidade de {group.name} atualizada.', 'success')
+
+        elif action == 'reserve_machine':
+            machine = Machine.query.filter_by(event_id=event.id, id=request.form.get('machine_id')).first_or_404()
+            payer_name = (request.form.get('payer_name') or '').strip()
+            payment_method = (request.form.get('payment_method') or '').strip().lower()
+            valid_methods = {'pix', 'cartao', 'dinheiro', 'a_pagar'}
+
+            if machine.id in reserved_map:
+                flash(f'Máquina {machine.label} já está reservada.', 'error')
+                return redirect(url_for('admin.event_groups', event_id=event.id))
+            if machine.status != 'available':
+                flash(f'Máquina {machine.label} está desativada no momento.', 'error')
+                return redirect(url_for('admin.event_groups', event_id=event.id))
+            if not payer_name:
+                flash('Informe o nome do cliente para reservar a máquina.', 'error')
+                return redirect(url_for('admin.event_groups', event_id=event.id))
+            if payment_method not in valid_methods:
+                flash('Escolha uma forma de pagamento válida.', 'error')
+                return redirect(url_for('admin.event_groups', event_id=event.id))
+
+            payment_status = 'pending' if payment_method == 'a_pagar' else 'paid'
+            payment_provider_map = {
+                'pix': 'pix',
+                'cartao': 'cartao',
+                'dinheiro': 'dinheiro',
+                'a_pagar': 'manual',
+            }
+            reservation = Reservation(
+                event_id=event.id,
+                user_id=current_user.id,
+                code=f'ADM-{uuid4().hex[:8].upper()}',
+                total_amount=machine.group.price,
+                status='confirmed' if payment_status == 'paid' else 'pending',
+                payment_status=payment_status,
+                payment_provider=payment_provider_map[payment_method],
+                payer_name=payer_name,
+                payer_phone=current_user.phone or '',
+            )
+            db.session.add(reservation)
+            db.session.flush()
+            db.session.add(ReservationItem(
+                reservation_id=reservation.id,
+                machine_id=machine.id,
+                price=machine.group.price,
+            ))
+            db.session.commit()
+            flash(f'Máquina {machine.label} reservada para {payer_name}.', 'success')
 
         return redirect(url_for('admin.event_groups', event_id=event.id))
 
     groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
-    sections = build_machine_sections(groups, unavailable_machine_ids=set())
+    blocked_machine_ids = set(reserved_map.keys())
+    sections = build_machine_sections(groups, unavailable_machine_ids=blocked_machine_ids)
     total_machines = Machine.query.filter_by(event_id=event.id).count()
     disabled_count = Machine.query.filter_by(event_id=event.id, status='disabled').count()
-    available_count = max(total_machines - disabled_count, 0)
+    reserved_count = len(reserved_map)
+    available_count = max(total_machines - disabled_count - reserved_count, 0)
     return render_template(
         'admin/event_groups.html',
         event=event,
@@ -539,7 +607,9 @@ def event_groups(event_id):
         sections=sections,
         total_machines=total_machines,
         disabled_count=disabled_count,
+        reserved_count=reserved_count,
         available_count=available_count,
+        reserved_map=reserved_map,
     )
 
 @admin_bp.route('/vendas')

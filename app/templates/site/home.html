@@ -2,7 +2,7 @@
 {% block title %}Play4Lan Frag-Night{% endblock %}
 {% block content %}
 <section class="hero hero--luxury-bg">
-  <div class="container hero-grid hero-grid-events">
+  <div class="container hero-grid hero-grid-events hero-grid-events-carousel">
     <div>
       <span class="eyebrow">SEU PRÓXIMO NÍVEL COMEÇA AQUI</span>
       <h1>Reserve sua máquina para o <span>Frag-Night</span> na Play4Lan</h1>
@@ -13,68 +13,75 @@
       </div>
     </div>
 
-    <div class="hero-event-stack" id="reserva-destaque">
-      {% for item in featured_event_summaries %}
-      {% set current_event = item.event %}
-      {% set alienware = item.section_map.get('sala_gamer', {'available_count': 0, 'price': 0}) %}
-      {% set dell = item.section_map.get('fora_parede', {'available_count': 0, 'price': 0}) %}
-      {% set gamer = item.section_map.get('fora_meio', {'available_count': 0, 'price': 0}) %}
-      <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2">
-        <div class="hero-card-line hero-card-line--top">
-          <strong class="hero-card-location">PLAY4LAN - VILA A</strong>
-          <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
-        </div>
-
-        <div class="hero-card-line hero-card-line--schedule hero-card-line--schedule-compact">
-          <div>
-            <div class="hero-day">{{ item.weekday_label }}</div>
-            <div class="hero-datetime">{{ current_event.event_date.strftime('%d/%m/%Y') }}{% if current_event.starts_at %} - {{ current_event.starts_at.strftime('%Hh') }}{% endif %}</div>
+    <div class="hero-event-carousel" id="reserva-destaque" {% if featured_event_summaries|length > 1 %}data-home-carousel{% endif %}>
+      <div class="hero-event-carousel__track">
+        {% for item in featured_event_summaries %}
+        {% set current_event = item.event %}
+        {% set alienware = item.section_map.get('sala_gamer', {'available_count': 0, 'price': 0}) %}
+        {% set dell = item.section_map.get('fora_parede', {'available_count': 0, 'price': 0}) %}
+        {% set gamer = item.section_map.get('fora_meio', {'available_count': 0, 'price': 0}) %}
+        <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2 hero-carousel-card {{ 'is-primary' if loop.first else 'is-preview' }}">
+          <div class="hero-card-line hero-card-line--top">
+            <strong class="hero-card-location">PLAY4LAN - VILA A</strong>
+            <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>
           </div>
-          <div class="hero-card-availability-summary">
-            <span>{{ item.available_count }} PCs livres</span>
-          </div>
-        </div>
 
-        <div class="hero-details-grid hero-details-grid--compact">
-          <div class="hero-machines-column hero-machines-column--full">
-            <div class="hero-column-title"><i class="bi bi-grid-3x3-gap-fill"></i> Máquinas restantes</div>
-            <div class="hero-machine-list">
-              <div class="hero-machine-item hero-machine-item--split">
-                <div class="hero-machine-main">
-                  <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
-                  <span class="hero-machine-stock">{{ alienware.available_count }} disponíveis</span>
+          <div class="hero-card-line hero-card-line--schedule hero-card-line--schedule-compact">
+            <div>
+              <div class="hero-day">{{ item.weekday_label }}</div>
+              <div class="hero-datetime">{{ current_event.event_date.strftime('%d/%m/%Y') }}{% if current_event.starts_at %} - {{ current_event.starts_at.strftime('%Hh') }}{% endif %}</div>
+            </div>
+            <div class="hero-card-availability-summary">
+              <span>{{ item.available_count }} PCs livres</span>
+            </div>
+          </div>
+
+          <div class="hero-details-grid hero-details-grid--compact">
+            <div class="hero-machines-column hero-machines-column--full">
+              <div class="hero-column-title"><i class="bi bi-grid-3x3-gap-fill"></i> Máquinas restantes</div>
+              <div class="hero-machine-list">
+                <div class="hero-machine-item hero-machine-item--split">
+                  <div class="hero-machine-main">
+                    <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--alienware"></span> Alienware</span>
+                    <span class="hero-machine-stock">{{ alienware.available_count }} disponíveis</span>
+                  </div>
+                  <span class="hero-machine-price">{{ alienware.price|money_br }}</span>
                 </div>
-                <span class="hero-machine-price">{{ alienware.price|money_br }}</span>
-              </div>
-              <div class="hero-machine-item hero-machine-item--split">
-                <div class="hero-machine-main">
-                  <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--dell"></span> PC Dell</span>
-                  <span class="hero-machine-stock">{{ dell.available_count }} disponíveis</span>
+                <div class="hero-machine-item hero-machine-item--split">
+                  <div class="hero-machine-main">
+                    <span class="hero-machine-name"><span class="brand-icon brand-icon--home brand-icon--dell"></span> PC Dell</span>
+                    <span class="hero-machine-stock">{{ dell.available_count }} disponíveis</span>
+                  </div>
+                  <span class="hero-machine-price">{{ dell.price|money_br }}</span>
                 </div>
-                <span class="hero-machine-price">{{ dell.price|money_br }}</span>
-              </div>
-              <div class="hero-machine-item hero-machine-item--split">
-                <div class="hero-machine-main">
-                  <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
-                  <span class="hero-machine-stock">{{ gamer.available_count }} disponíveis</span>
+                <div class="hero-machine-item hero-machine-item--split">
+                  <div class="hero-machine-main">
+                    <span class="hero-machine-name hero-machine-name--single-line"><i class="bi bi-pc-display brand-icon-fallback brand-icon-fallback--home"></i> PC Gamer</span>
+                    <span class="hero-machine-stock">{{ gamer.available_count }} disponíveis</span>
+                  </div>
+                  <span class="hero-machine-price">{{ gamer.price|money_br }}</span>
                 </div>
-                <span class="hero-machine-price">{{ gamer.price|money_br }}</span>
               </div>
             </div>
           </div>
-        </div>
 
-        <a class="btn full" href="{{ url_for('site.event_detail', slug=current_event.slug) }}">Escolher máquinas</a>
-      </article>
-      {% else %}
-      <article class="hero-card hero-card-compact">
-        <div class="hero-card-top hero-card-top--with-badge">
-          <span>Eventos</span>
-        </div>
-        <h3>Nenhum evento ativo</h3>
-        <p>Cadastre o próximo Frag-Night no admin para ele aparecer aqui automaticamente.</p>
-      </article>
-      {% endfor %}
+          <a class="btn full" href="{{ url_for('site.event_detail', slug=current_event.slug) }}">Escolher máquinas</a>
+        </article>
+        {% else %}
+        <article class="hero-card hero-card-compact">
+          <div class="hero-card-top hero-card-top--with-badge">
+            <span>Eventos</span>
+          </div>
+          <h3>Nenhum evento ativo</h3>
+          <p>Ative um ou mais Frag-Night no admin para eles aparecerem aqui.</p>
+        </article>
+        {% endfor %}
+      </div>
+      {% if featured_event_summaries|length > 1 %}
+      <button class="hero-carousel-nav" type="button" data-home-carousel-next aria-label="Próximo evento">
+        <i class="bi bi-arrow-right"></i>
+      </button>
+      {% endif %}
     </div>
   </div>
 </section>

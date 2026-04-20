@@ -86,7 +86,6 @@ if (mapModal) {
   });
 }
 
-
 function slugifyValue(value) {
   return String(value || '')
     .normalize('NFD')
@@ -161,8 +160,6 @@ if (adminModal) {
   });
 }
 
-
-
 const groupCreateForm = document.querySelector('[data-group-create-form]');
 if (groupCreateForm) {
   document.querySelectorAll('[data-group-preset]').forEach((button) => {
@@ -223,4 +220,125 @@ if (userMenu) {
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeUserMenu();
   });
+}
+
+const machineActionModal = document.getElementById('machine-action-modal');
+if (machineActionModal) {
+  const labelEl = machineActionModal.querySelector('#machine-modal-label');
+  const groupEl = machineActionModal.querySelector('#machine-modal-group');
+  const statusEl = machineActionModal.querySelector('#machine-modal-status');
+  const priceEl = machineActionModal.querySelector('#machine-modal-price');
+  const reservedByEl = machineActionModal.querySelector('#machine-modal-reserved-by');
+  const paymentEl = machineActionModal.querySelector('#machine-modal-payment');
+  const actionsEl = machineActionModal.querySelector('#machine-modal-actions');
+  const reserveForm = machineActionModal.querySelector('#machine-reserve-form');
+  const reserveMachineId = machineActionModal.querySelector('#reserve-machine-id');
+  const payerNameField = machineActionModal.querySelector('#reserve-payer-name');
+  const paymentMethodField = machineActionModal.querySelector('#reserve-payment-method');
+
+  const closeMachineModal = () => {
+    machineActionModal.hidden = true;
+    document.body.classList.remove('modal-open');
+  };
+
+  const formatPaymentLabel = (value) => {
+    const labels = {
+      pix: 'Pix',
+      cartao: 'Cartão',
+      dinheiro: 'Dinheiro',
+      manual: 'A pagar',
+      a_pagar: 'A pagar',
+      '': '-',
+    };
+    return labels[value] || value;
+  };
+
+  document.querySelectorAll('[data-machine-modal-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const status = button.dataset.machineStatus || 'available';
+      const machineId = button.dataset.machineId || '';
+      const reservedBy = button.dataset.machineReservedBy || '';
+
+      labelEl.textContent = button.dataset.machineLabel || '--';
+      groupEl.textContent = button.dataset.machineGroup || 'Máquina';
+      priceEl.textContent = button.dataset.machinePrice || 'R$ 0,00';
+      reservedByEl.textContent = reservedBy || 'Sem reserva';
+      paymentEl.textContent = formatPaymentLabel(button.dataset.machinePayment || '');
+      reserveMachineId.value = machineId;
+      payerNameField.value = '';
+      paymentMethodField.value = 'pix';
+
+      let statusText = 'Disponível';
+      let statusClass = 'badge';
+      let toggleText = 'Desativar';
+
+      if (status === 'disabled') {
+        statusText = 'Desativada';
+        statusClass = 'badge badge-danger';
+        toggleText = 'Ativar';
+      }
+      if (status === 'reserved') {
+        statusText = 'Reservada';
+        statusClass = 'badge badge-live';
+      }
+
+      statusEl.className = statusClass;
+      statusEl.textContent = statusText;
+
+      actionsEl.innerHTML = '';
+      if (status !== 'reserved') {
+        actionsEl.innerHTML = `
+          <form method="post">
+            <input type="hidden" name="action" value="toggle_machine">
+            <input type="hidden" name="machine_id" value="${machineId}">
+            <button class="btn btn-ghost full" type="submit">${toggleText}</button>
+          </form>
+        `;
+        reserveForm.removeAttribute('hidden');
+      } else {
+        reserveForm.setAttribute('hidden', 'hidden');
+      }
+
+      machineActionModal.hidden = false;
+      document.body.classList.add('modal-open');
+    });
+  });
+
+  machineActionModal.querySelectorAll('[data-close-modal]').forEach((button) => {
+    button.addEventListener('click', closeMachineModal);
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !machineActionModal.hidden) {
+      closeMachineModal();
+    }
+  });
+}
+
+const homeCarousel = document.querySelector('[data-home-carousel]');
+if (homeCarousel) {
+  const track = homeCarousel.querySelector('.hero-event-carousel__track');
+  const cards = Array.from(homeCarousel.querySelectorAll('.hero-carousel-card'));
+  const nextButton = homeCarousel.querySelector('[data-home-carousel-next]');
+  let currentIndex = 0;
+
+  const renderCarousel = () => {
+    cards.forEach((card, index) => {
+      card.classList.remove('is-primary', 'is-preview', 'is-hidden');
+      if (index === currentIndex) {
+        card.classList.add('is-primary');
+      } else if (index === (currentIndex + 1) % cards.length) {
+        card.classList.add('is-preview');
+      } else {
+        card.classList.add('is-hidden');
+      }
+    });
+  };
+
+  nextButton?.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    renderCarousel();
+  });
+
+  renderCarousel();
 }

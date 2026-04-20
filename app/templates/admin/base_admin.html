@@ -6,7 +6,7 @@
       <div class="admin-sidebar__intro">
         <span class="eyebrow">PAINEL PLAY4LAN</span>
         <h2>Central do admin</h2>
-        <p>Organize eventos, mapa de máquinas, vendas e integrações em um fluxo mais limpo.</p>
+        <p>Acesse eventos, máquinas, vendas e integrações de forma mais direta.</p>
       </div>
 
       <nav class="admin-nav" aria-label="Navegação do painel">
@@ -21,14 +21,13 @@
           <i class="bi bi-calendar2-week"></i>
           <span>
             <strong>Eventos</strong>
-            <small>Cadastro, edição e publicação</small>
           </span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.event_groups' else '' }}" href="{{ url_for('admin.events') }}">
           <i class="bi bi-grid-3x3-gap"></i>
           <span>
             <strong>Máquinas</strong>
-            <small>Grupos, mapas e posições</small>
+            <small>Controle por frag</small>
           </span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.sales' else '' }}" href="{{ url_for('admin.sales') }}">
@@ -42,33 +41,17 @@
           <i class="bi bi-plug"></i>
           <span>
             <strong>Integrações</strong>
-            <small>Tokens, status e QR code</small>
+            <small>Tokens e conexões</small>
           </span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.account' else '' }}" href="{{ url_for('admin.account') }}">
           <i class="bi bi-person-gear"></i>
           <span>
             <strong>Conta</strong>
-            <small>Acesso e credenciais do admin</small>
+            <small>Acesso do admin</small>
           </span>
         </a>
       </nav>
-
-      <div class="admin-flow-card glass-card">
-        <div class="admin-flow-card__head">
-          <div class="admin-sidebar__helper-icon"><i class="bi bi-diagram-3"></i></div>
-          <div>
-            <strong>Fluxo padrão</strong>
-            <p>Use esta ordem para manter o painel consistente.</p>
-          </div>
-        </div>
-        <ol class="admin-flow-list">
-          <li>Criar ou duplicar um evento</li>
-          <li>Configurar grupos e máquinas</li>
-          <li>Publicar ou ativar na home</li>
-          <li>Conferir vendas e pagamentos</li>
-        </ol>
-      </div>
 
       <div class="admin-sidebar__footer">
         <a class="btn btn-ghost full" href="{{ url_for('site.home') }}"><i class="bi bi-house-door"></i> Ver site</a>

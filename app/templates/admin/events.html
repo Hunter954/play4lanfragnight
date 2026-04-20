@@ -44,8 +44,8 @@
       <div>
         <label><i class="bi bi-flag"></i> Status</label>
         <select name="status">
-          <option value="draft">Rascunho</option>
           <option value="published">Publicado</option>
+          <option value="draft">Rascunho</option>
           <option value="archived">Arquivado</option>
         </select>
       </div>
@@ -68,7 +68,7 @@
       <span class="eyebrow">Lista</span>
       <h2>Frags cadastrados</h2>
     </div>
-    <p class="muted-copy">Veja os frags em cards mais organizados e sem estourar o layout.</p>
+    <p class="muted-copy">Cards menores, duas colunas e ação rápida por frag.</p>
   </div>
 
   <div class="admin-event-list">
@@ -96,7 +96,7 @@
         <form method="post" class="full">
           <input type="hidden" name="action" value="deactivate">
           <input type="hidden" name="event_id" value="{{ event.id }}">
-          <button class="btn btn-sm btn-ghost full" type="submit"><i class="bi bi-eye-slash"></i> Tirar da home</button>
+          <button class="btn btn-sm btn-ghost full" type="submit"><i class="bi bi-eye-slash"></i> Desativado na home</button>
         </form>
         {% else %}
         <form method="post" class="full">
@@ -130,8 +130,8 @@
             <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-edit-slug-{{ event.id }}" type="text" name="slug" value="{{ event.slug }}"></div>
             <div><label><i class="bi bi-flag"></i> Status</label>
               <select name="status">
-                <option value="draft" {{ 'selected' if event.status=='draft' else '' }}>Rascunho</option>
                 <option value="published" {{ 'selected' if event.status=='published' else '' }}>Publicado</option>
+                <option value="draft" {{ 'selected' if event.status=='draft' else '' }}>Rascunho</option>
                 <option value="archived" {{ 'selected' if event.status=='archived' else '' }}>Arquivado</option>
               </select>
             </div>

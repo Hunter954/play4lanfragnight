@@ -5,7 +5,7 @@
   <div>
     <span class="eyebrow">Máquinas do frag</span>
     <h1>{{ event.title }}</h1>
-    <p class="muted-copy">Aqui você só controla quais máquinas ficam disponíveis neste frag. A configuração base já vem pronta do padrão.</p>
+    <p class="muted-copy">Clique em um PC para abrir as ações rápidas: ativar, desativar ou reservar manualmente.</p>
   </div>
   <div class="admin-page-hero__actions">
     <a class="btn btn-ghost" href="{{ url_for('admin.events') }}"><i class="bi bi-arrow-left"></i> Voltar</a>
@@ -24,6 +24,10 @@
   <article class="admin-summary-card glass-card">
     <div class="admin-summary-card__icon"><i class="bi bi-slash-circle"></i></div>
     <div><p class="admin-summary-card__label">Desativadas</p><div class="metric">{{ disabled_count }}</div></div>
+  </article>
+  <article class="admin-summary-card glass-card">
+    <div class="admin-summary-card__icon"><i class="bi bi-person-check"></i></div>
+    <div><p class="admin-summary-card__label">Reservadas</p><div class="metric">{{ reserved_count }}</div></div>
   </article>
 </div>
 
@@ -54,14 +58,35 @@
 
     <div class="admin-machine-grid">
       {% for machine in section.machines %}
-      <form method="post" class="admin-machine-tile {{ 'is-disabled' if machine.status == 'disabled' else 'is-available' }}">
-        <input type="hidden" name="action" value="toggle_machine">
-        <input type="hidden" name="machine_id" value="{{ machine.id }}">
-        <button type="submit" class="admin-machine-tile__button">
+      {% set reservation = reserved_map.get(machine.id) %}
+      {% set reserve_label = reservation.payer_name if reservation else '' %}
+      {% set reserve_payment = reservation.payment_provider if reservation else '' %}
+      {% set visual_status = 'reserved' if reservation else machine.status %}
+      <button
+        type="button"
+        class="admin-machine-tile admin-machine-tile--trigger {{ 'is-reserved' if reservation else 'is-disabled' if machine.status == 'disabled' else 'is-available' }}"
+        data-machine-modal-open
+        data-machine-id="{{ machine.id }}"
+        data-machine-label="{{ machine.label }}"
+        data-machine-group="{{ section.title }}"
+        data-machine-status="{{ visual_status }}"
+        data-machine-price="{{ section.group.price|money_br }}"
+        data-machine-reserved-by="{{ reserve_label }}"
+        data-machine-payment="{{ reserve_payment }}"
+      >
+        <span class="admin-machine-tile__button">
           <span class="admin-machine-tile__label">{{ machine.label }}</span>
-          <span class="admin-machine-tile__status">{{ 'Desativada' if machine.status == 'disabled' else 'Disponível' }}</span>
-        </button>
-      </form>
+          <span class="admin-machine-tile__status">
+            {% if reservation %}
+              Reservada para {{ reservation.payer_name }}
+            {% elif machine.status == 'disabled' %}
+              Desativada
+            {% else %}
+              Disponível
+            {% endif %}
+          </span>
+        </span>
+      </button>
       {% endfor %}
     </div>
   </article>
@@ -70,5 +95,48 @@
     <p>Nenhuma configuração de máquina encontrada neste frag.</p>
   </article>
   {% endfor %}
+</div>
+
+<div class="admin-modal" id="machine-action-modal" hidden>
+  <div class="admin-modal__backdrop" data-close-modal></div>
+  <div class="admin-modal__dialog admin-modal__dialog--machine">
+    <button class="admin-modal__close" type="button" data-close-modal>×</button>
+    <div class="admin-machine-modal__header">
+      <div>
+        <span class="eyebrow" id="machine-modal-group">Máquina</span>
+        <h3>PC <span id="machine-modal-label">--</span></h3>
+      </div>
+      <span class="badge" id="machine-modal-status">Disponível</span>
+    </div>
+
+    <div class="admin-machine-modal__meta">
+      <div><span>Valor</span><strong id="machine-modal-price">R$ 0,00</strong></div>
+      <div><span>Reserva atual</span><strong id="machine-modal-reserved-by">Sem reserva</strong></div>
+      <div><span>Pagamento</span><strong id="machine-modal-payment">-</strong></div>
+    </div>
+
+    <div class="admin-machine-modal__actions" id="machine-modal-actions"></div>
+
+    <form method="post" class="admin-form admin-form--airy admin-machine-reserve-form" id="machine-reserve-form">
+      <input type="hidden" name="action" value="reserve_machine">
+      <input type="hidden" name="machine_id" id="reserve-machine-id">
+      <div class="form-grid">
+        <div>
+          <label><i class="bi bi-person"></i> Nome</label>
+          <input type="text" name="payer_name" id="reserve-payer-name" placeholder="Kevin" required>
+        </div>
+        <div>
+          <label><i class="bi bi-cash-stack"></i> Pagamento</label>
+          <select name="payment_method" id="reserve-payment-method" required>
+            <option value="pix">Pix</option>
+            <option value="cartao">Cartão</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="a_pagar">A pagar</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn full" type="submit"><i class="bi bi-person-check"></i> Reservar para cliente</button>
+    </form>
+  </div>
 </div>
 {% endblock %}
