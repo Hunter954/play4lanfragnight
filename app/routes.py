@@ -35,6 +35,28 @@ SECTION_META = {
     'outros': {'title': 'OUTROS', 'order': 99, 'short_title': 'Outros'},
 }
 
+
+
+def slugify_text(value):
+    value = unicodedata.normalize('NFKD', (value or '').strip()).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^a-zA-Z0-9\s-]', '', value).strip().lower()
+    value = re.sub(r'[-\s]+', '-', value)
+    return value or 'frag-night'
+
+
+def unique_event_slug(value, current_event_id=None):
+    base_slug = slugify_text(value)
+    candidate = base_slug
+    counter = 2
+    while True:
+        query = FragNightEvent.query.filter_by(slug=candidate)
+        if current_event_id is not None:
+            query = query.filter(FragNightEvent.id != current_event_id)
+        if not query.first():
+            return candidate
+        candidate = f'{base_slug}-{counter}'
+        counter += 1
+
 def split_location_label(value):
     value = (value or '').strip()
     if '|' in value:
@@ -394,7 +416,17 @@ def events():
         action = request.form.get('action')
 
         if action == 'create':
-            event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
+            event_date_raw = (request.form.get('event_date') or '').strip()
+            if not event_date_raw:
+                flash('Escolha a data do frag para continuar.', 'error')
+                return redirect(url_for('admin.events'))
+
+            try:
+                event_date_value = datetime.strptime(event_date_raw, '%Y-%m-%d').date()
+            except ValueError:
+                flash('Data inválida. Confira o dia informado.', 'error')
+                return redirect(url_for('admin.events'))
+
             source_event = get_default_template_event()
             title = build_event_title(event_date_value, request.form.get('title'))
             slug = unique_event_slug(request.form.get('slug') or title)

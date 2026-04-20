@@ -512,7 +512,7 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
 .admin-check-wrap{display:flex;align-items:flex-end}
 .admin-check-wrap .checkbox-line{margin:0 0 6px}
 .admin-events-subheader{align-items:end}
-.admin-event-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.admin-event-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
 .admin-event-card{padding:18px;display:grid;gap:14px;min-width:0}
 .admin-event-card.is-active{box-shadow:0 0 0 1px rgba(34,197,94,.18),0 10px 50px rgba(0,0,0,.3)}
 .admin-event-card__top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
@@ -536,11 +536,14 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
 .admin-event-card__actions .btn,
 .admin-event-card__secondary .btn{
   min-height:48px;
+  min-width:0;
   padding:12px 14px;
   font-size:.96rem;
-  line-height:1.05;
+  line-height:1.15;
   text-align:center;
-  white-space:nowrap;
+  white-space:normal;
+  word-break:break-word;
+  overflow-wrap:anywhere;
 }
 .admin-event-card__secondary .btn{min-width:0}
 .admin-event-card__actions .btn-ghost,
@@ -548,10 +551,20 @@ th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-
   background:rgba(10,14,24,.78);
   border:1px solid rgba(255,255,255,.08);
 }
-.admin-event-card__top .badge{white-space:nowrap}
+.admin-event-card__top .badge{white-space:normal;max-width:100%;text-align:center}
+
+.admin-event-card,
+.admin-event-card__top,
+.admin-event-card__meta,
+.admin-event-card__actions,
+.admin-event-card__actions form,
+.admin-event-card__secondary,
+.admin-event-card__secondary form{min-width:0}
+.admin-event-card__actions > *,
+.admin-event-card__secondary > *{min-width:0}
 
 @media (max-width: 1200px){
-  .admin-event-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .admin-event-list{grid-template-columns:repeat(2,minmax(0,1fr))}
   .form-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
