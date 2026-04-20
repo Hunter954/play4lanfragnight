@@ -4,8 +4,8 @@
 <div class="admin-page-hero glass-card admin-page-hero--compact">
   <div>
     <span class="eyebrow">Máquinas do frag</span>
-    <h1>{{ event.title }}</h1>
-    <p class="muted-copy">Clique em um PC para abrir as ações rápidas: ativar, desativar ou reservar manualmente.</p>
+    <h1>{{ weekday_label }}</h1>
+    <p class="muted-copy">{{ datetime_label }} • clique em um PC para abrir as ações rápidas do admin.</p>
   </div>
   <div class="admin-page-hero__actions">
     <a class="btn btn-ghost" href="{{ url_for('admin.events') }}"><i class="bi bi-arrow-left"></i> Voltar</a>
@@ -146,6 +146,27 @@
         </div>
       </div>
       <button class="btn full" type="submit"><i class="bi bi-person-check"></i> Reservar para cliente</button>
+    </form>
+
+    <form method="post" class="admin-form admin-form--airy admin-machine-reserve-form" id="machine-update-form" hidden>
+      <input type="hidden" name="action" value="update_reservation">
+      <input type="hidden" name="reservation_id" id="update-reservation-id">
+      <div class="form-grid">
+        <div>
+          <label><i class="bi bi-person"></i> Nome</label>
+          <input type="text" name="payer_name" id="update-payer-name" placeholder="Kevin" required>
+        </div>
+        <div>
+          <label><i class="bi bi-cash-stack"></i> Pagamento</label>
+          <select name="payment_method" id="update-payment-method" required>
+            <option value="pix">Pix</option>
+            <option value="cartao">Cartão</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="a_pagar">A pagar</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn full" type="submit"><i class="bi bi-pencil-square"></i> Salvar reserva</button>
     </form>
   </div>
 </div>

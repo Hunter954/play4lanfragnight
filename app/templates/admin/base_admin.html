@@ -11,25 +11,23 @@
       <nav class="admin-nav" aria-label="Navegação do painel">
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.dashboard' else '' }}" href="{{ url_for('admin.dashboard') }}">
           <i class="bi bi-speedometer2"></i>
-          <span><strong>Resumo</strong></span>
+          <strong>Resumo</strong>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.events' else '' }}" href="{{ url_for('admin.events') }}">
           <i class="bi bi-calendar2-week"></i>
-          <span>
-            <strong>Eventos</strong>
-          </span>
+          <strong>Eventos</strong>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.sales' else '' }}" href="{{ url_for('admin.sales') }}">
           <i class="bi bi-receipt-cutoff"></i>
-          <span><strong>Vendas</strong></span>
+          <strong>Vendas</strong>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.apis' else '' }}" href="{{ url_for('admin.apis') }}">
           <i class="bi bi-plug"></i>
-          <span><strong>Integrações</strong></span>
+          <strong>Integrações</strong>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.account' else '' }}" href="{{ url_for('admin.account') }}">
           <i class="bi bi-person-gear"></i>
-          <span><strong>Conta</strong></span>
+          <strong>Conta</strong>
         </a>
       </nav>
 

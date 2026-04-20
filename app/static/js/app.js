@@ -232,11 +232,15 @@ if (machineActionModal) {
   const paymentEl = machineActionModal.querySelector('#machine-modal-payment');
   const actionsEl = machineActionModal.querySelector('#machine-modal-actions');
   const reserveForm = machineActionModal.querySelector('#machine-reserve-form');
+  const updateForm = machineActionModal.querySelector('#machine-update-form');
   const releaseForm = machineActionModal.querySelector('#machine-release-form');
   const releaseReservationId = machineActionModal.querySelector('#release-reservation-id');
+  const updateReservationId = machineActionModal.querySelector('#update-reservation-id');
   const reserveMachineId = machineActionModal.querySelector('#reserve-machine-id');
   const payerNameField = machineActionModal.querySelector('#reserve-payer-name');
   const paymentMethodField = machineActionModal.querySelector('#reserve-payment-method');
+  const updatePayerNameField = machineActionModal.querySelector('#update-payer-name');
+  const updatePaymentMethodField = machineActionModal.querySelector('#update-payment-method');
 
   const closeMachineModal = () => {
     machineActionModal.hidden = true;
@@ -269,9 +273,13 @@ if (machineActionModal) {
       reservedByEl.textContent = reservedBy || 'Sem reserva';
       paymentEl.textContent = formatPaymentLabel(paymentValue);
       reserveMachineId.value = machineId;
+      const normalizedPayment = paymentValue === 'manual' ? 'a_pagar' : (paymentValue || 'pix');
       releaseReservationId.value = reservationId;
+      updateReservationId.value = reservationId;
       payerNameField.value = reservedBy || '';
-      paymentMethodField.value = paymentValue === 'manual' ? 'a_pagar' : (paymentValue || 'pix');
+      paymentMethodField.value = normalizedPayment;
+      updatePayerNameField.value = reservedBy || '';
+      updatePaymentMethodField.value = normalizedPayment;
 
       let statusText = 'Disponível';
       let statusClass = 'badge';
@@ -300,9 +308,12 @@ if (machineActionModal) {
           </form>
         `;
         reserveForm.removeAttribute('hidden');
+        updateForm?.setAttribute('hidden', 'hidden');
         releaseForm?.setAttribute('hidden', 'hidden');
       } else {
+        actionsEl.innerHTML = '';
         reserveForm.setAttribute('hidden', 'hidden');
+        updateForm?.removeAttribute('hidden');
         releaseForm?.removeAttribute('hidden');
       }
 
@@ -327,18 +338,17 @@ if (homeCarousel) {
   const cards = Array.from(homeCarousel.querySelectorAll('.hero-carousel-card'));
   const nextButton = homeCarousel.querySelector('[data-home-carousel-next]');
   let currentIndex = 0;
-  let previousIndex = 0;
+  let isAnimating = false;
 
-  const renderCarousel = (direction = 'next') => {
+  const renderCarousel = () => {
     cards.forEach((card, index) => {
-      card.classList.remove('is-current', 'is-peek', 'is-offright', 'is-offleft', 'is-previous');
-
+      card.classList.remove('is-current', 'is-peek', 'is-offright', 'is-offleft');
       if (index === currentIndex) {
         card.classList.add('is-current');
       } else if (index === (currentIndex + 1) % cards.length) {
         card.classList.add('is-peek');
-      } else if (direction === 'next' && index === previousIndex) {
-        card.classList.add('is-offleft', 'is-previous');
+      } else if (index < currentIndex) {
+        card.classList.add('is-offleft');
       } else {
         card.classList.add('is-offright');
       }
@@ -346,10 +356,15 @@ if (homeCarousel) {
   };
 
   nextButton?.addEventListener('click', () => {
-    previousIndex = currentIndex;
+    if (isAnimating) return;
+    isAnimating = true;
     currentIndex = (currentIndex + 1) % cards.length;
-    renderCarousel('next');
+    renderCarousel();
+    window.setTimeout(() => {
+      isAnimating = false;
+    }, 520);
   });
 
   renderCarousel();
 }
+

@@ -31,7 +31,7 @@
     <div class="form-grid form-grid-4">
       <div>
         <label><i class="bi bi-calendar-date"></i> Dia do Frag</label>
-        <input type="date" name="event_date" required>
+        <input type="date" name="event_date" min="{{ today_iso }}" required>
       </div>
       <div>
         <label><i class="bi bi-type"></i> Título (opcional)</label>
@@ -125,7 +125,7 @@
           <input type="hidden" name="action" value="update">
           <input type="hidden" name="event_id" value="{{ event.id }}">
           <div class="form-grid form-grid-4">
-            <div><label><i class="bi bi-calendar-date"></i> Dia do Frag</label><input type="date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" required></div>
+            <div><label><i class="bi bi-calendar-date"></i> Dia do Frag</label><input type="date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" min="{{ today_iso }}" required></div>
             <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" value="{{ event.title }}" data-slug-source data-slug-target="#event-edit-slug-{{ event.id }}"></div>
             <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-edit-slug-{{ event.id }}" type="text" name="slug" value="{{ event.slug }}"></div>
             <div><label><i class="bi bi-flag"></i> Status</label>
