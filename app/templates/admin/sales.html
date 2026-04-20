@@ -10,9 +10,9 @@
 {% endfor %}
 <div class="admin-page-hero glass-card">
   <div>
-    <span class="eyebrow">Relatórios</span>
-    <h1>Compras por Frag-Night</h1>
-    <p class="muted-copy">Confira clientes, máquinas escolhidas e andamento do pagamento sem precisar abrir tela por tela.</p>
+    <span class="eyebrow">Vendas</span>
+    <h1>Pagamentos e reservas</h1>
+    <p class="muted-copy">Acompanhe clientes, máquinas escolhidas e status de pagamento em uma única lista.</p>
   </div>
 </div>
 
@@ -20,9 +20,9 @@
   <article class="admin-summary-card glass-card">
     <div class="admin-summary-card__icon"><i class="bi bi-bag-check"></i></div>
     <div>
-      <p class="admin-summary-card__label">Total de reservas</p>
+      <p class="admin-summary-card__label">Reservas</p>
       <div class="metric">{{ reservations|length }}</div>
-      <small>Todas as vendas registradas</small>
+      <small>Total de registros no sistema</small>
     </div>
   </article>
   <article class="admin-summary-card glass-card">
@@ -34,11 +34,11 @@
     </div>
   </article>
   <article class="admin-summary-card glass-card">
-    <div class="admin-summary-card__icon"><i class="bi bi-person-lines-fill"></i></div>
+    <div class="admin-summary-card__icon"><i class="bi bi-clock-history"></i></div>
     <div>
-      <p class="admin-summary-card__label">Leitura rápida</p>
+      <p class="admin-summary-card__label">Últimos movimentos</p>
       <div class="metric">{{ reservations[:5]|length }}</div>
-      <small>As primeiras linhas ajudam a checar o movimento recente</small>
+      <small>Primeiras linhas facilitam a conferência rápida</small>
     </div>
   </article>
 </div>
@@ -46,8 +46,8 @@
 <div class="glass-card mt-24">
   <div class="section-header admin-table-head">
     <div>
-      <span class="eyebrow">Tabela</span>
-      <h2>Lista de vendas</h2>
+      <span class="eyebrow">Lista completa</span>
+      <h2>Reservas por evento</h2>
     </div>
   </div>
   <div class="table-wrap table-wrap--admin">

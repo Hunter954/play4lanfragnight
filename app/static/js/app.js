@@ -162,6 +162,34 @@ if (adminModal) {
 }
 
 
+
+const groupCreateForm = document.querySelector('[data-group-create-form]');
+if (groupCreateForm) {
+  document.querySelectorAll('[data-group-preset]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const preset = JSON.parse(button.getAttribute('data-group-preset') || '{}');
+      const fields = {
+        name: groupCreateForm.querySelector('[name="name"]'),
+        layout: groupCreateForm.querySelector('[name="layout_key"]'),
+        location: groupCreateForm.querySelector('[name="location_label"]'),
+        quantity: groupCreateForm.querySelector('[name="quantity"]'),
+        color: groupCreateForm.querySelector('[name="color"]'),
+        specs: groupCreateForm.querySelector('[name="specs"]'),
+      };
+
+      if (fields.name) fields.name.value = preset.name || '';
+      if (fields.layout) fields.layout.value = preset.layout || '';
+      if (fields.location) fields.location.value = preset.location || '';
+      if (fields.quantity) fields.quantity.value = preset.quantity || '';
+      if (fields.color) fields.color.value = preset.color || '#0057e1';
+      if (fields.specs) fields.specs.value = preset.specs || '';
+
+      document.querySelectorAll('[data-group-preset]').forEach((item) => item.classList.remove('is-active'));
+      button.classList.add('is-active');
+    });
+  });
+}
+
 const userMenu = document.querySelector('[data-user-menu]');
 if (userMenu) {
   const trigger = userMenu.querySelector('[data-user-menu-trigger]');

@@ -4,34 +4,22 @@
 <div class="admin-page-hero glass-card">
   <div>
     <span class="eyebrow">Eventos</span>
-    <h1>Criar e gerenciar Frag-Night</h1>
-    <p class="muted-copy">Fluxo simples: crie o evento, ajuste o horário, deixe ativo na home e depois monte as máquinas.</p>
+    <h1>Cadastro de Frag-Night</h1>
+    <p class="muted-copy">Crie o evento, ajuste horários, publique e depois siga para o mapa de máquinas.</p>
   </div>
   <div class="admin-page-hero__actions">
     {% if default_template_id %}
-    <button type="button" class="btn" data-open-modal="default-event-modal"><i class="bi bi-lightning-charge"></i> Evento rápido</button>
+    <button type="button" class="btn" data-open-modal="default-event-modal"><i class="bi bi-lightning-charge"></i> Criar pelo padrão</button>
     {% else %}
-    <button type="button" class="btn btn-ghost" disabled><i class="bi bi-stars"></i> Defina um padrão primeiro</button>
+    <button type="button" class="btn btn-ghost" disabled><i class="bi bi-stars"></i> Defina um evento padrão</button>
     {% endif %}
   </div>
 </div>
 
-<div class="admin-helper-grid admin-helper-grid--compact">
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">1</span>
-    <h3>Crie</h3>
-    <p>Informe título, data e status.</p>
-  </article>
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">2</span>
-    <h3>Ative</h3>
-    <p>Marque o evento que deve aparecer na home.</p>
-  </article>
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">3</span>
-    <h3>Monte</h3>
-    <p>Abra o botão “Máquinas” para configurar o mapa.</p>
-  </article>
+<div class="admin-process-strip glass-card">
+  <div class="admin-process-strip__item is-current"><span>1</span><strong>Criar evento</strong><small>Dados principais</small></div>
+  <div class="admin-process-strip__item"><span>2</span><strong>Montar mapa</strong><small>Grupos e máquinas</small></div>
+  <div class="admin-process-strip__item"><span>3</span><strong>Publicar</strong><small>Ativar na home</small></div>
 </div>
 
 <div class="glass-card admin-events-create-card">
@@ -39,51 +27,77 @@
     <div>
       <span class="eyebrow">Novo evento</span>
       <h2>Criar manualmente</h2>
-      <p class="muted-copy">O slug é gerado pelo título. Se não preencher horário, o sistema pode usar 22:00 → 06:00.</p>
+      <p class="muted-copy">Preencha só o essencial. O slug acompanha o título e os horários podem usar o padrão 22:00 → 06:00.</p>
     </div>
     <div class="mini-badges">
-      {% if default_template_id %}<span class="badge badge-live"><i class="bi bi-check2-circle"></i> Padrão pronto</span>{% endif %}
-      <span class="badge"><i class="bi bi-clock"></i> 22:00 → 06:00</span>
+      {% if default_template_id %}<span class="badge badge-live"><i class="bi bi-check2-circle"></i> Modelo pronto</span>{% endif %}
+      <span class="badge"><i class="bi bi-clock"></i> Horário padrão</span>
     </div>
   </div>
 
-  <form method="post" class="admin-form admin-form--airy">
+  <form method="post" class="admin-form admin-form--airy admin-form--sectioned">
     <input type="hidden" name="action" value="create">
-    <div class="form-grid form-grid-4">
-      <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" data-slug-source data-slug-target="#event-create-slug" required></div>
-      <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-create-slug" type="text" name="slug" placeholder="automatico-pelo-titulo"></div>
-      <div><label><i class="bi bi-calendar-date"></i> Data</label><input type="date" name="event_date" required></div>
-      <div><label><i class="bi bi-flag"></i> Status</label>
-        <select name="status">
-          <option value="draft">Rascunho</option>
-          <option value="published">Publicado</option>
-          <option value="archived">Arquivado</option>
-        </select>
+
+    <div class="admin-form-section">
+      <div class="admin-form-section__head">
+        <h3>Dados principais</h3>
+        <p>Informações básicas do evento.</p>
       </div>
-      <div><label><i class="bi bi-hourglass-split"></i> Início</label><input type="datetime-local" name="starts_at"></div>
-      <div><label><i class="bi bi-hourglass-bottom"></i> Fim</label><input type="datetime-local" name="ends_at"></div>
-      <div class="admin-check-wrap admin-check-wrap--box">
-        <label class="checkbox-line"><input type="checkbox" name="use_default_time" value="1" checked> Usar horário padrão</label>
-      </div>
-      <div class="admin-check-wrap admin-check-wrap--box">
-        <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Mostrar na home</label>
+      <div class="form-grid form-grid-4">
+        <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" data-slug-source data-slug-target="#event-create-slug" required></div>
+        <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-create-slug" type="text" name="slug" placeholder="automatico-pelo-titulo"></div>
+        <div><label><i class="bi bi-calendar-date"></i> Data</label><input type="date" name="event_date" required></div>
+        <div><label><i class="bi bi-flag"></i> Status</label>
+          <select name="status">
+            <option value="draft">Rascunho</option>
+            <option value="published">Publicado</option>
+            <option value="archived">Arquivado</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="form-grid">
-      <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description" placeholder="Explique rapidamente o evento."></textarea></div>
-      <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text" placeholder="Texto curto que aparece no topo do site."></textarea></div>
+
+    <div class="admin-form-section">
+      <div class="admin-form-section__head">
+        <h3>Horários e vitrine</h3>
+        <p>Defina o período do evento e se ele aparece na home.</p>
+      </div>
+      <div class="form-grid form-grid-4">
+        <div><label><i class="bi bi-hourglass-split"></i> Início</label><input type="datetime-local" name="starts_at"></div>
+        <div><label><i class="bi bi-hourglass-bottom"></i> Fim</label><input type="datetime-local" name="ends_at"></div>
+        <div class="admin-check-wrap admin-check-wrap--box">
+          <label class="checkbox-line"><input type="checkbox" name="use_default_time" value="1" checked> Aplicar 22:00 → 06:00</label>
+        </div>
+        <div class="admin-check-wrap admin-check-wrap--box">
+          <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Exibir na home</label>
+        </div>
+      </div>
     </div>
-    <button class="btn" type="submit"><i class="bi bi-plus-circle"></i> Criar evento</button>
+
+    <div class="admin-form-section">
+      <div class="admin-form-section__head">
+        <h3>Textos do evento</h3>
+        <p>Conteúdo usado no detalhe e no destaque da home.</p>
+      </div>
+      <div class="form-grid">
+        <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description" placeholder="Resumo do evento."></textarea></div>
+        <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text" placeholder="Chamada curta para a home."></textarea></div>
+      </div>
+    </div>
+
+    <div class="admin-form-footer">
+      <button class="btn" type="submit"><i class="bi bi-plus-circle"></i> Criar evento</button>
+    </div>
   </form>
 </div>
 
 <section class="mt-24">
   <div class="section-header admin-events-subheader">
     <div>
-      <span class="eyebrow">Lista</span>
-      <h2>Todos os eventos</h2>
+      <span class="eyebrow">Eventos cadastrados</span>
+      <h2>Gerenciar lista</h2>
     </div>
-    <p class="muted-copy">Cada card já traz os botões mais usados.</p>
+    <p class="muted-copy">Cada card concentra os atalhos principais do evento.</p>
   </div>
 
   <div class="admin-event-list">
@@ -136,37 +150,47 @@
       </div>
 
       <div id="event-edit-{{ event.id }}" class="admin-event-panel" hidden>
-        <form method="post" class="admin-form compact-form admin-form--airy">
+        <form method="post" class="admin-form compact-form admin-form--airy admin-form--sectioned">
           <input type="hidden" name="action" value="update">
           <input type="hidden" name="event_id" value="{{ event.id }}">
-          <div class="form-grid form-grid-2">
-            <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" value="{{ event.title }}" data-slug-source data-slug-target="#event-edit-slug-{{ event.id }}" required></div>
-            <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-edit-slug-{{ event.id }}" type="text" name="slug" value="{{ event.slug }}"></div>
-            <div><label><i class="bi bi-calendar-date"></i> Data</label><input type="date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" required></div>
-            <div><label><i class="bi bi-flag"></i> Status</label>
-              <select name="status">
-                <option value="draft" {{ 'selected' if event.status=='draft' else '' }}>Rascunho</option>
-                <option value="published" {{ 'selected' if event.status=='published' else '' }}>Publicado</option>
-                <option value="archived" {{ 'selected' if event.status=='archived' else '' }}>Arquivado</option>
-              </select>
+          <div class="admin-form-section">
+            <div class="admin-form-section__head">
+              <h3>Editar dados</h3>
+              <p>Atualize as informações principais do evento.</p>
             </div>
-            <div><label><i class="bi bi-hourglass-split"></i> Início</label><input type="datetime-local" name="starts_at" value="{{ event.starts_at.strftime('%Y-%m-%dT%H:%M') if event.starts_at else '' }}"></div>
-            <div><label><i class="bi bi-hourglass-bottom"></i> Fim</label><input type="datetime-local" name="ends_at" value="{{ event.ends_at.strftime('%Y-%m-%dT%H:%M') if event.ends_at else '' }}"></div>
+            <div class="form-grid form-grid-2">
+              <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" value="{{ event.title }}" data-slug-source data-slug-target="#event-edit-slug-{{ event.id }}" required></div>
+              <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-edit-slug-{{ event.id }}" type="text" name="slug" value="{{ event.slug }}"></div>
+              <div><label><i class="bi bi-calendar-date"></i> Data</label><input type="date" name="event_date" value="{{ event.event_date.strftime('%Y-%m-%d') }}" required></div>
+              <div><label><i class="bi bi-flag"></i> Status</label>
+                <select name="status">
+                  <option value="draft" {{ 'selected' if event.status=='draft' else '' }}>Rascunho</option>
+                  <option value="published" {{ 'selected' if event.status=='published' else '' }}>Publicado</option>
+                  <option value="archived" {{ 'selected' if event.status=='archived' else '' }}>Arquivado</option>
+                </select>
+              </div>
+              <div><label><i class="bi bi-hourglass-split"></i> Início</label><input type="datetime-local" name="starts_at" value="{{ event.starts_at.strftime('%Y-%m-%dT%H:%M') if event.starts_at else '' }}"></div>
+              <div><label><i class="bi bi-hourglass-bottom"></i> Fim</label><input type="datetime-local" name="ends_at" value="{{ event.ends_at.strftime('%Y-%m-%dT%H:%M') if event.ends_at else '' }}"></div>
+            </div>
           </div>
-          <div class="form-grid">
-            <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description">{{ event.description or '' }}</textarea></div>
-            <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text">{{ event.hero_text or '' }}</textarea></div>
+          <div class="admin-form-section">
+            <div class="form-grid">
+              <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description">{{ event.description or '' }}</textarea></div>
+              <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text">{{ event.hero_text or '' }}</textarea></div>
+            </div>
           </div>
           <div class="actions-inline">
             <label class="checkbox-line"><input type="checkbox" name="use_default_time" value="1"> Resetar para 22:00 → 06:00</label>
             <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" {{ 'checked' if event.is_active else '' }}> Evento ativo na home</label>
           </div>
-          <button class="btn btn-sm" type="submit"><i class="bi bi-check2-circle"></i> Salvar alterações</button>
+          <button class="btn btn-sm" type="submit"><i class="bi bi-save"></i> Salvar alterações</button>
         </form>
       </div>
     </article>
     {% else %}
-    <article class="glass-card"><p>Sem eventos por enquanto.</p></article>
+    <article class="glass-card">
+      <p>Nenhum evento cadastrado ainda.</p>
+    </article>
     {% endfor %}
   </div>
 </section>
@@ -174,36 +198,32 @@
 {% if default_template_id %}
 <div id="default-event-modal" class="admin-modal" hidden>
   <div class="admin-modal__backdrop" data-close-modal></div>
-  <div class="admin-modal__dialog glass-card">
-    <button type="button" class="admin-modal__close" data-close-modal>×</button>
-    <div class="section-header admin-modal__head">
-      <div>
-        <span class="eyebrow">Padrão</span>
-        <h2>Evento rápido</h2>
-      </div>
-      <p class="muted-copy">Cria um novo evento usando o modelo já salvo, com menos passos.</p>
-    </div>
-    <form method="post" class="admin-form admin-form--airy">
+  <div class="glass-card admin-modal__dialog">
+    <button type="button" class="admin-modal__close" data-close-modal>&times;</button>
+    <span class="eyebrow">Evento rápido</span>
+    <h2>Criar a partir do padrão</h2>
+    <p class="muted-copy">Usa o evento marcado como padrão e replica grupos, máquinas e textos.</p>
+    <form method="post" class="admin-form admin-form--airy admin-form--sectioned mt-24">
       <input type="hidden" name="action" value="create_from_default">
       <input type="hidden" name="template_event_id" value="{{ default_template_id }}">
       <div class="form-grid form-grid-2">
-        <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" placeholder="Frag-Night 05/04/2026" data-slug-source data-slug-target="#event-default-slug"></div>
-        <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="event-default-slug" type="text" name="slug" placeholder="automatico-pelo-titulo"></div>
+        <div><label><i class="bi bi-type"></i> Título</label><input type="text" name="title" data-slug-source data-slug-target="#default-event-slug" placeholder="Frag-Night Especial"></div>
+        <div><label><i class="bi bi-link-45deg"></i> Slug</label><input id="default-event-slug" type="text" name="slug" placeholder="automatico-pelo-titulo"></div>
         <div><label><i class="bi bi-calendar-date"></i> Data</label><input type="date" name="event_date" required></div>
         <div><label><i class="bi bi-flag"></i> Status</label>
           <select name="status">
-            <option value="published">Publicado</option>
             <option value="draft">Rascunho</option>
+            <option value="published">Publicado</option>
             <option value="archived">Arquivado</option>
           </select>
         </div>
       </div>
       <div class="form-grid">
-        <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description" placeholder="Se deixar vazio, copia do evento padrão."></textarea></div>
-        <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text" placeholder="Se deixar vazio, copia do evento padrão."></textarea></div>
+        <div><label><i class="bi bi-card-text"></i> Descrição</label><textarea name="description" placeholder="Se deixar em branco, usa a descrição do padrão."></textarea></div>
+        <div><label><i class="bi bi-megaphone"></i> Texto da home</label><textarea name="hero_text" placeholder="Se deixar em branco, usa o texto do padrão."></textarea></div>
       </div>
-      <label class="checkbox-line"><input type="checkbox" name="make_active" value="1" checked> Criar já como evento ativo na home</label>
-      <button class="btn" type="submit"><i class="bi bi-lightning-charge"></i> Criar evento</button>
+      <label class="checkbox-line"><input type="checkbox" name="make_active" value="1"> Ativar na home assim que criar</label>
+      <button class="btn" type="submit"><i class="bi bi-stars"></i> Criar pelo padrão</button>
     </form>
   </div>
 </div>

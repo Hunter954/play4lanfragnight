@@ -5,61 +5,87 @@
   <div>
     <span class="eyebrow">Máquinas</span>
     <h1>{{ event.title }}</h1>
-    <p class="muted-copy">Aqui você monta o mapa do evento. Os layouts fixos já criam as posições corretas automaticamente.</p>
+    <p class="muted-copy">Cadastre grupos com mapas prontos ou use um bloco livre quando precisar de algo fora do padrão.</p>
   </div>
   <div class="admin-page-hero__actions">
     <a class="btn btn-ghost" href="{{ url_for('admin.events') }}"><i class="bi bi-arrow-left"></i> Voltar para eventos</a>
   </div>
 </div>
 
-<div class="admin-helper-grid admin-helper-grid--compact">
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">1</span>
-    <h3>Escolha o grupo</h3>
-    <p>Ex.: Alienware, PC Gamer ou PC Dell.</p>
-  </article>
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">2</span>
-    <h3>Selecione o mapa</h3>
-    <p>O mapa fixo já usa a numeração certa.</p>
-  </article>
-  <article class="glass-card admin-helper-card admin-helper-card--small">
-    <span class="badge">3</span>
-    <h3>Salve</h3>
-    <p>Depois confira o visual no mapa atual.</p>
-  </article>
+<div class="admin-process-strip glass-card admin-process-strip--machines">
+  <div class="admin-process-strip__item"><span>1</span><strong>Evento</strong><small>Cadastro pronto</small></div>
+  <div class="admin-process-strip__item is-current"><span>2</span><strong>Máquinas</strong><small>Grupo e mapa</small></div>
+  <div class="admin-process-strip__item"><span>3</span><strong>Home</strong><small>Ativar evento</small></div>
 </div>
 
-<div class="glass-card">
+<div class="glass-card admin-group-create-card">
   <div class="section-header admin-create-head">
     <div>
       <span class="eyebrow">Novo grupo</span>
       <h2>Adicionar bloco de máquinas</h2>
+      <p class="muted-copy">Escolha um modelo para preencher os campos mais rápido ou configure manualmente.</p>
     </div>
   </div>
-  <form method="post" class="admin-form admin-form--airy">
+
+  <div class="admin-preset-grid">
+    <button type="button" class="admin-preset-card" data-group-preset='{"name":"Sala Alienware","layout":"sala_gamer","location":"Sala Alienware","quantity":"10","color":"#0057e1","specs":"Monitor 360Hz\nSetup premium\nEspaço interno"}'>
+      <strong>Sala Alienware</strong>
+      <small>Mapa 21 a 30</small>
+    </button>
+    <button type="button" class="admin-preset-card" data-group-preset='{"name":"PC Gamer","layout":"fora_meio","location":"Área central","quantity":"10","color":"#2563eb","specs":"Setup gamer\nLinha central\nFácil acesso"}'>
+      <strong>PC Gamer</strong>
+      <small>Mapa 06 a 15</small>
+    </button>
+    <button type="button" class="admin-preset-card" data-group-preset='{"name":"PC Dell","layout":"fora_parede","location":"Parede externa","quantity":"10","color":"#0f766e","specs":"Setup Dell\nLinha lateral\nMapa parede"}'>
+      <strong>PC Dell</strong>
+      <small>Mapa 01 a 05 e 16 a 20</small>
+    </button>
+    <button type="button" class="admin-preset-card" data-group-preset='{"name":"Bloco extra","layout":"","location":"Área livre","quantity":"4","color":"#7c3aed","specs":"Grupo flexível"}'>
+      <strong>Bloco livre</strong>
+      <small>Sem mapa fixo</small>
+    </button>
+  </div>
+
+  <form method="post" class="admin-form admin-form--airy admin-form--sectioned" data-group-create-form>
     <input type="hidden" name="action" value="create_group">
-    <div class="form-grid form-grid-3">
-      <div><label><i class="bi bi-type"></i> Nome do grupo</label><input type="text" name="name" placeholder="Sala Alienware 360Hz" required></div>
-      <div>
-        <label><i class="bi bi-grid-3x3-gap"></i> Mapa fixo</label>
-        <select name="layout_key">
-          <option value="sala_gamer">Sala Alienware (21 a 30)</option>
-          <option value="fora_meio">PC Gamer (06 a 15)</option>
-          <option value="fora_parede">PC Dell (01 a 05 e 16 a 20)</option>
-          <option value="">Sem mapa fixo</option>
-        </select>
+
+    <div class="admin-form-section">
+      <div class="admin-form-section__head">
+        <h3>Dados do grupo</h3>
+        <p>Nome, mapa, local e volume de máquinas.</p>
       </div>
-      <div><label><i class="bi bi-geo-alt"></i> Local / observação</label><input type="text" name="location_label" placeholder="Sala interna / parede / meio"></div>
-      <div><label><i class="bi bi-123"></i> Quantidade</label><input type="number" name="quantity" value="10" min="1" step="1"></div>
-      <div><label><i class="bi bi-cash"></i> Valor por máquina</label><input type="number" name="price" value="0" min="0" step="0.01"></div>
-      <div><label><i class="bi bi-palette"></i> Cor do grupo</label><input type="color" name="color" value="#0057e1"></div>
+      <div class="form-grid form-grid-3">
+        <div><label><i class="bi bi-type"></i> Nome do grupo</label><input type="text" name="name" placeholder="Sala Alienware 360Hz" required></div>
+        <div>
+          <label><i class="bi bi-grid-3x3-gap"></i> Mapa fixo</label>
+          <select name="layout_key">
+            <option value="sala_gamer">Sala Alienware (21 a 30)</option>
+            <option value="fora_meio">PC Gamer (06 a 15)</option>
+            <option value="fora_parede">PC Dell (01 a 05 e 16 a 20)</option>
+            <option value="">Sem mapa fixo</option>
+          </select>
+        </div>
+        <div><label><i class="bi bi-geo-alt"></i> Local / observação</label><input type="text" name="location_label" placeholder="Sala interna / parede / meio"></div>
+        <div><label><i class="bi bi-123"></i> Quantidade</label><input type="number" name="quantity" value="10" min="1" step="1"></div>
+        <div><label><i class="bi bi-cash"></i> Valor por máquina</label><input type="number" name="price" value="0" min="0" step="0.01"></div>
+        <div><label><i class="bi bi-palette"></i> Cor do grupo</label><input type="color" name="color" value="#0057e1"></div>
+      </div>
     </div>
-    <div>
-      <label><i class="bi bi-pc-display"></i> Configuração</label>
-      <textarea name="specs" placeholder="Processador: ...&#10;Placa de vídeo: ...&#10;Memória: ..."></textarea>
+
+    <div class="admin-form-section">
+      <div class="admin-form-section__head">
+        <h3>Configuração</h3>
+        <p>Use uma linha por especificação para deixar o card mais legível.</p>
+      </div>
+      <div>
+        <label><i class="bi bi-pc-display"></i> Configuração</label>
+        <textarea name="specs" placeholder="Processador: ...\nPlaca de vídeo: ...\nMemória: ..."></textarea>
+      </div>
     </div>
-    <button class="btn" type="submit"><i class="bi bi-plus-circle"></i> Adicionar grupo</button>
+
+    <div class="admin-form-footer">
+      <button class="btn" type="submit"><i class="bi bi-plus-circle"></i> Adicionar grupo</button>
+    </div>
   </form>
 </div>
 
@@ -74,7 +100,7 @@
       </div>
       <span class="badge"><i class="bi bi-cash"></i> {{ group.price|money_br }}</span>
     </div>
-    <form method="post" class="admin-form compact-form admin-form--airy">
+    <form method="post" class="admin-form compact-form admin-form--airy admin-form--sectioned">
       <input type="hidden" name="action" value="update_group">
       <input type="hidden" name="group_id" value="{{ group.id }}">
       <div class="form-grid form-grid-3">
