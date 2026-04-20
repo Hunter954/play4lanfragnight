@@ -1185,3 +1185,26 @@ input[readonly]{cursor:not-allowed;opacity:.92;background:rgba(255,255,255,.04)}
   .admin-form-footer{justify-content:stretch}
   .admin-form-footer .btn{width:100%}
 }
+
+
+.admin-page-hero--compact{padding:24px 26px}
+.admin-simple-create-card{padding:24px}
+.admin-inline-notes{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);margin-top:18px}
+.admin-inline-notes span{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:600}
+.admin-summary-grid--machines{margin-top:24px}
+.admin-machine-sections{display:grid;gap:22px;margin-top:24px}
+.admin-machine-section-card{padding:24px}
+.admin-machine-section-card__head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+.admin-machine-section-card__actions{display:flex;gap:10px;flex-wrap:wrap}
+.admin-machine-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+.admin-machine-tile{margin:0}
+.admin-machine-tile__button{width:100%;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:#111827;color:#fff;padding:18px 14px;display:grid;gap:6px;text-align:left;cursor:pointer;transition:.18s ease}
+.admin-machine-tile__button:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+.admin-machine-tile__label{font-size:1.2rem;font-weight:800}
+.admin-machine-tile__status{font-size:.88rem;color:#cbd5e1}
+.admin-machine-tile.is-disabled .admin-machine-tile__button{background:rgba(127,29,29,.45);border-color:rgba(248,113,113,.35)}
+.admin-machine-tile.is-available .admin-machine-tile__button{background:rgba(3,105,52,.32);border-color:rgba(74,222,128,.24)}
+@media (max-width: 780px){
+  .admin-inline-notes,.admin-machine-section-card__head{flex-direction:column;align-items:stretch}
+  .admin-machine-section-card__actions,.admin-machine-grid{grid-template-columns:1fr}
+}

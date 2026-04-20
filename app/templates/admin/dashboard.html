@@ -2,15 +2,15 @@
 {% block title %}Admin{% endblock %}
 {% block admin_content %}
 {% set active_count = events|selectattr('is_active')|list|length %}
-<div class="admin-page-hero glass-card">
+<div class="admin-page-hero glass-card admin-page-hero--compact">
   <div>
-    <span class="eyebrow">Resumo geral</span>
-    <h1>Operação do admin</h1>
-    <p class="muted-copy">Veja o que está ativo, o total já recebido e as reservas mais recentes.</p>
+    <span class="eyebrow">Resumo</span>
+    <h1>Painel admin</h1>
+    <p class="muted-copy">Visão rápida do que está ativo, do que já entrou e das reservas recentes.</p>
   </div>
   <div class="admin-page-hero__actions">
-    <a class="btn" href="{{ url_for('admin.events') }}"><i class="bi bi-plus-circle"></i> Gerenciar eventos</a>
-    <a class="btn btn-ghost" href="{{ url_for('admin.sales') }}"><i class="bi bi-receipt"></i> Abrir vendas</a>
+    <a class="btn" href="{{ url_for('admin.events') }}"><i class="bi bi-calendar-plus"></i> Frags</a>
+    <a class="btn btn-ghost" href="{{ url_for('admin.sales') }}"><i class="bi bi-receipt"></i> Vendas</a>
   </div>
 </div>
 
@@ -18,7 +18,7 @@
   <article class="admin-summary-card glass-card">
     <div class="admin-summary-card__icon"><i class="bi bi-calendar2-event"></i></div>
     <div>
-      <p class="admin-summary-card__label">Eventos</p>
+      <p class="admin-summary-card__label">Frags</p>
       <div class="metric">{{ events|length }}</div>
       <small>{{ active_count }} ativo{{ '' if active_count == 1 else 's' }} na home</small>
     </div>
@@ -37,36 +37,6 @@
       <p class="admin-summary-card__label">Reservas recentes</p>
       <div class="metric">{{ reservations|length }}</div>
       <small>Últimos registros listados abaixo</small>
-    </div>
-  </article>
-</div>
-
-<div class="admin-quick-grid">
-  <article class="glass-card admin-panel-card">
-    <div class="admin-panel-card__head">
-      <div>
-        <span class="eyebrow">Próximos passos</span>
-        <h2>Ritmo de publicação</h2>
-      </div>
-    </div>
-    <div class="admin-step-list">
-      <div class="admin-step-item"><span>1</span><div><strong>Criar evento</strong><p>Defina nome, data, horários e status.</p></div></div>
-      <div class="admin-step-item"><span>2</span><div><strong>Montar máquinas</strong><p>Cadastre grupos com o mapa correto.</p></div></div>
-      <div class="admin-step-item"><span>3</span><div><strong>Ativar vitrine</strong><p>Selecione o evento que fica na home.</p></div></div>
-    </div>
-  </article>
-
-  <article class="glass-card admin-panel-card">
-    <div class="admin-panel-card__head">
-      <div>
-        <span class="eyebrow">Acesso rápido</span>
-        <h2>Áreas principais</h2>
-      </div>
-    </div>
-    <div class="admin-shortcuts">
-      <a class="admin-shortcut" href="{{ url_for('admin.events') }}"><i class="bi bi-calendar-plus"></i><span><strong>Novo evento</strong><small>Cadastro e edição</small></span></a>
-      <a class="admin-shortcut" href="{{ url_for('admin.sales') }}"><i class="bi bi-graph-up"></i><span><strong>Vendas</strong><small>Status e valores</small></span></a>
-      <a class="admin-shortcut" href="{{ url_for('admin.apis') }}"><i class="bi bi-plug"></i><span><strong>Integrações</strong><small>Credenciais e QR</small></span></a>
     </div>
   </article>
 </div>

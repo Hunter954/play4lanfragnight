@@ -157,6 +157,25 @@ def build_default_event_times(event_date_value):
     return start, end
 
 
+def get_default_template_event():
+    template_id = SiteSetting.get('default_event_template_id', '')
+    if template_id:
+        try:
+            event = FragNightEvent.query.get(int(template_id))
+            if event:
+                return event
+        except (TypeError, ValueError):
+            pass
+    return FragNightEvent.query.join(MachineGroup, MachineGroup.event_id == FragNightEvent.id).order_by(FragNightEvent.event_date.desc()).first()
+
+
+def build_event_title(event_date_value, provided_title=''):
+    provided_title = (provided_title or '').strip()
+    if provided_title:
+        return provided_title
+    return f"Frag Night {event_date_value.strftime('%d/%m/%Y')}"
+
+
 def clone_event_groups(source_event, target_event):
     group_map = {}
     source_groups = MachineGroup.query.filter_by(event_id=source_event.id).order_by(MachineGroup.id.asc()).all()
@@ -375,69 +394,40 @@ def events():
         action = request.form.get('action')
 
         if action == 'create':
-            slug = unique_event_slug(request.form.get('slug') or request.form.get('title'))
             event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
-            starts_at = parse_local_datetime(request.form.get('starts_at'))
-            ends_at = parse_local_datetime(request.form.get('ends_at'))
-            if request.form.get('use_default_time') and not starts_at and not ends_at:
-                starts_at, ends_at = build_default_event_times(event_date_value)
+            source_event = get_default_template_event()
+            title = build_event_title(event_date_value, request.form.get('title'))
+            slug = unique_event_slug(request.form.get('slug') or title)
+            starts_at, ends_at = build_default_event_times(event_date_value)
             if request.form.get('make_active'):
                 FragNightEvent.query.update({'is_active': False})
             event = FragNightEvent(
-                title=request.form.get('title'),
+                title=title,
                 slug=slug,
                 event_date=event_date_value,
                 starts_at=starts_at,
                 ends_at=ends_at,
-                description=request.form.get('description'),
-                hero_text=request.form.get('hero_text'),
+                description=(source_event.description if source_event else request.form.get('description')),
+                hero_text=(source_event.hero_text if source_event else request.form.get('hero_text')),
                 status=request.form.get('status', 'draft'),
                 is_active=bool(request.form.get('make_active'))
             )
             db.session.add(event)
-            db.session.commit()
-            flash('Evento criado.', 'success')
-
-        elif action == 'create_from_default':
-            template_id = request.form.get('template_event_id') or SiteSetting.get('default_event_template_id', '')
-            source_event = FragNightEvent.query.get_or_404(int(template_id))
-            event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
-            starts_at, ends_at = build_default_event_times(event_date_value)
-            slug_seed = request.form.get('slug') or request.form.get('title') or f"{source_event.title} {event_date_value.strftime('%d-%m-%Y')}"
-            slug = unique_event_slug(slug_seed)
-            if request.form.get('make_active'):
-                FragNightEvent.query.update({'is_active': False})
-            event = FragNightEvent(
-                title=request.form.get('title') or f"{source_event.title} {event_date_value.strftime('%d/%m/%Y')}",
-                slug=slug,
-                event_date=event_date_value,
-                starts_at=starts_at,
-                ends_at=ends_at,
-                description=request.form.get('description') or source_event.description,
-                hero_text=request.form.get('hero_text') or source_event.hero_text,
-                status=request.form.get('status', source_event.status or 'draft'),
-                is_active=bool(request.form.get('make_active'))
-            )
-            db.session.add(event)
             db.session.flush()
-            clone_event_groups(source_event, event)
+            if source_event:
+                clone_event_groups(source_event, event)
             db.session.commit()
-            flash('Evento criado a partir do padrão.', 'success')
+            flash('Frag criado com horário padrão e máquinas do padrão.', 'success')
 
         elif action == 'update':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
             event_date_value = datetime.strptime(request.form.get('event_date'), '%Y-%m-%d').date()
-            starts_at = parse_local_datetime(request.form.get('starts_at'))
-            ends_at = parse_local_datetime(request.form.get('ends_at'))
-            if request.form.get('use_default_time'):
-                starts_at, ends_at = build_default_event_times(event_date_value)
-            event.title = request.form.get('title')
-            event.slug = unique_event_slug(request.form.get('slug') or request.form.get('title'), current_event_id=event.id)
+            starts_at, ends_at = build_default_event_times(event_date_value)
+            event.title = build_event_title(event_date_value, request.form.get('title'))
+            event.slug = unique_event_slug(request.form.get('slug') or event.title, current_event_id=event.id)
             event.event_date = event_date_value
             event.starts_at = starts_at
             event.ends_at = ends_at
-            event.description = request.form.get('description')
-            event.hero_text = request.form.get('hero_text')
             event.status = request.form.get('status', 'draft')
             if request.form.get('make_active'):
                 FragNightEvent.query.update({'is_active': False})
@@ -445,13 +435,13 @@ def events():
             else:
                 event.is_active = False
             db.session.commit()
-            flash('Evento atualizado.', 'success')
+            flash('Frag atualizado.', 'success')
 
         elif action == 'set_template':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
             SiteSetting.set('default_event_template_id', str(event.id))
             db.session.commit()
-            flash('Evento definido como padrão.', 'success')
+            flash('Este evento virou o padrão de máquinas.', 'success')
 
         elif action == 'activate':
             event = FragNightEvent.query.get_or_404(request.form.get('event_id'))
@@ -479,8 +469,8 @@ def events():
         return redirect(url_for('admin.events'))
 
     events = FragNightEvent.query.order_by(FragNightEvent.event_date.desc()).all()
-    default_template_id = SiteSetting.get('default_event_template_id', '')
-    return render_template('admin/events.html', events=events, default_template_id=default_template_id)
+    default_template = get_default_template_event()
+    return render_template('admin/events.html', events=events, default_template=default_template, default_template_id=(default_template.id if default_template else ''))
 
 @admin_bp.route('/evento/<int:event_id>/grupos', methods=['GET', 'POST'])
 @login_required
@@ -489,86 +479,36 @@ def event_groups(event_id):
     event = FragNightEvent.query.get_or_404(event_id)
     if request.method == 'POST':
         action = request.form.get('action')
-        if action == 'create_group':
-            layout_key = request.form.get('layout_key', '').strip()
-            location_label = request.form.get('location_label', '').strip()
-            fixed_labels = FIXED_LAYOUTS.get(layout_key, [])
-            quantity = len(fixed_labels) if fixed_labels else int(request.form.get('quantity', 10))
 
-            encoded_location = f"{layout_key}|{location_label}" if layout_key else location_label
-            group = MachineGroup(
-                event_id=event.id,
-                name=request.form.get('name'),
-                location_label=encoded_location,
-                quantity=quantity,
-                price=request.form.get('price', 0),
-                specs=request.form.get('specs'),
-                color=request.form.get('color', '#0057e1'),
-            )
-            db.session.add(group)
-            db.session.flush()
-
-            used_labels = {machine.label.zfill(2) for machine in Machine.query.filter_by(event_id=event.id).all()}
-            labels_to_create = [label for label in fixed_labels if label.zfill(2) not in used_labels] if fixed_labels else []
-            if not labels_to_create and fixed_labels:
-                labels_to_create = fixed_labels
-
-            if labels_to_create:
-                for label in labels_to_create:
-                    db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
-            else:
-                existing_count = Machine.query.filter_by(event_id=event.id).count()
-                for i in range(group.quantity):
-                    label = str(existing_count + i + 1).zfill(2)
-                    db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
+        if action == 'toggle_machine':
+            machine = Machine.query.filter_by(event_id=event.id, id=request.form.get('machine_id')).first_or_404()
+            machine.status = 'disabled' if machine.status == 'available' else 'available'
             db.session.commit()
-            flash('Grupo e máquinas criados.', 'success')
+            flash(f'Máquina {machine.label} atualizada.', 'success')
 
-        elif action == 'update_group':
-            group = MachineGroup.query.get_or_404(request.form.get('group_id'))
-            old_layout_key, _ = split_location_label(group.location_label or group.name)
-            new_layout_key = request.form.get('layout_key', '').strip()
-            location_label = request.form.get('location_label', '').strip()
-            group.name = request.form.get('name')
-            group.location_label = f"{new_layout_key}|{location_label}" if new_layout_key else location_label
-            group.quantity = int(request.form.get('quantity', group.quantity or 1))
-            group.price = request.form.get('price', group.price or 0)
-            group.specs = request.form.get('specs')
-            group.color = request.form.get('color', group.color or '#0057e1')
-
-            if new_layout_key != old_layout_key:
-                existing_machines = Machine.query.filter_by(group_id=group.id).order_by(Machine.id.asc()).all()
-                desired_labels = FIXED_LAYOUTS.get(new_layout_key, [])
-                if desired_labels:
-                    reserved_elsewhere = {m.label.zfill(2) for m in Machine.query.filter(Machine.event_id == event.id, Machine.group_id != group.id).all()}
-                    allowed_labels = [label for label in desired_labels if label.zfill(2) not in reserved_elsewhere]
-                    if len(allowed_labels) != len(desired_labels):
-                        flash('Não foi possível trocar o mapa fixo porque já existem máquinas usando algumas posições.', 'error')
-                        db.session.rollback()
-                        return redirect(url_for('admin.event_groups', event_id=event.id))
-                    for index, machine in enumerate(existing_machines):
-                        if index < len(desired_labels):
-                            machine.label = desired_labels[index]
-                    if len(existing_machines) < len(desired_labels):
-                        for label in desired_labels[len(existing_machines):]:
-                            db.session.add(Machine(event_id=event.id, group_id=group.id, label=label, status='available'))
-                    elif len(existing_machines) > len(desired_labels):
-                        for machine in existing_machines[len(desired_labels):]:
-                            db.session.delete(machine)
-                    group.quantity = len(desired_labels)
-
+        elif action == 'set_group_status':
+            group = MachineGroup.query.filter_by(event_id=event.id, id=request.form.get('group_id')).first_or_404()
+            target_status = request.form.get('target_status', 'available')
+            Machine.query.filter_by(event_id=event.id, group_id=group.id).update({'status': target_status})
             db.session.commit()
-            flash('Grupo atualizado.', 'success')
+            flash(f'Disponibilidade de {group.name} atualizada.', 'success')
 
-        elif action == 'delete_group':
-            group = MachineGroup.query.get_or_404(request.form.get('group_id'))
-            db.session.delete(group)
-            db.session.commit()
-            flash('Grupo removido.', 'success')
         return redirect(url_for('admin.event_groups', event_id=event.id))
+
     groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
     sections = build_machine_sections(groups, unavailable_machine_ids=set())
-    return render_template('admin/event_groups.html', event=event, groups=groups, sections=sections)
+    total_machines = Machine.query.filter_by(event_id=event.id).count()
+    disabled_count = Machine.query.filter_by(event_id=event.id, status='disabled').count()
+    available_count = max(total_machines - disabled_count, 0)
+    return render_template(
+        'admin/event_groups.html',
+        event=event,
+        groups=groups,
+        sections=sections,
+        total_machines=total_machines,
+        disabled_count=disabled_count,
+        available_count=available_count,
+    )
 
 @admin_bp.route('/vendas')
 @login_required
