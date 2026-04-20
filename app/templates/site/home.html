@@ -20,7 +20,7 @@
         {% set alienware = item.section_map.get('sala_gamer', {'available_count': 0, 'price': 0}) %}
         {% set dell = item.section_map.get('fora_parede', {'available_count': 0, 'price': 0}) %}
         {% set gamer = item.section_map.get('fora_meio', {'available_count': 0, 'price': 0}) %}
-        <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2 hero-carousel-card {{ 'is-primary' if loop.first else 'is-preview' }}">
+        <article class="hero-card hero-card-compact hero-card-reservation hero-card-reservation-v2 hero-carousel-card {{ 'is-current' if loop.first else 'is-peek' if loop.index == 2 else 'is-offright' }}">
           <div class="hero-card-line hero-card-line--top">
             <strong class="hero-card-location">PLAY4LAN - VILA A</strong>
             <span class="availability-badge"><span class="availability-badge__dot"></span> Disponível</span>

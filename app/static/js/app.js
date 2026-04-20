@@ -232,6 +232,8 @@ if (machineActionModal) {
   const paymentEl = machineActionModal.querySelector('#machine-modal-payment');
   const actionsEl = machineActionModal.querySelector('#machine-modal-actions');
   const reserveForm = machineActionModal.querySelector('#machine-reserve-form');
+  const releaseForm = machineActionModal.querySelector('#machine-release-form');
+  const releaseReservationId = machineActionModal.querySelector('#release-reservation-id');
   const reserveMachineId = machineActionModal.querySelector('#reserve-machine-id');
   const payerNameField = machineActionModal.querySelector('#reserve-payer-name');
   const paymentMethodField = machineActionModal.querySelector('#reserve-payment-method');
@@ -258,15 +260,18 @@ if (machineActionModal) {
       const status = button.dataset.machineStatus || 'available';
       const machineId = button.dataset.machineId || '';
       const reservedBy = button.dataset.machineReservedBy || '';
+      const reservationId = button.dataset.machineReservationId || '';
+      const paymentValue = button.dataset.machinePayment || '';
 
       labelEl.textContent = button.dataset.machineLabel || '--';
       groupEl.textContent = button.dataset.machineGroup || 'Máquina';
       priceEl.textContent = button.dataset.machinePrice || 'R$ 0,00';
       reservedByEl.textContent = reservedBy || 'Sem reserva';
-      paymentEl.textContent = formatPaymentLabel(button.dataset.machinePayment || '');
+      paymentEl.textContent = formatPaymentLabel(paymentValue);
       reserveMachineId.value = machineId;
-      payerNameField.value = '';
-      paymentMethodField.value = 'pix';
+      releaseReservationId.value = reservationId;
+      payerNameField.value = reservedBy || '';
+      paymentMethodField.value = paymentValue === 'manual' ? 'a_pagar' : (paymentValue || 'pix');
 
       let statusText = 'Disponível';
       let statusClass = 'badge';
@@ -295,8 +300,10 @@ if (machineActionModal) {
           </form>
         `;
         reserveForm.removeAttribute('hidden');
+        releaseForm?.setAttribute('hidden', 'hidden');
       } else {
         reserveForm.setAttribute('hidden', 'hidden');
+        releaseForm?.removeAttribute('hidden');
       }
 
       machineActionModal.hidden = false;
@@ -317,27 +324,31 @@ if (machineActionModal) {
 
 const homeCarousel = document.querySelector('[data-home-carousel]');
 if (homeCarousel) {
-  const track = homeCarousel.querySelector('.hero-event-carousel__track');
   const cards = Array.from(homeCarousel.querySelectorAll('.hero-carousel-card'));
   const nextButton = homeCarousel.querySelector('[data-home-carousel-next]');
   let currentIndex = 0;
+  let previousIndex = 0;
 
-  const renderCarousel = () => {
+  const renderCarousel = (direction = 'next') => {
     cards.forEach((card, index) => {
-      card.classList.remove('is-primary', 'is-preview', 'is-hidden');
+      card.classList.remove('is-current', 'is-peek', 'is-offright', 'is-offleft', 'is-previous');
+
       if (index === currentIndex) {
-        card.classList.add('is-primary');
+        card.classList.add('is-current');
       } else if (index === (currentIndex + 1) % cards.length) {
-        card.classList.add('is-preview');
+        card.classList.add('is-peek');
+      } else if (direction === 'next' && index === previousIndex) {
+        card.classList.add('is-offleft', 'is-previous');
       } else {
-        card.classList.add('is-hidden');
+        card.classList.add('is-offright');
       }
     });
   };
 
   nextButton?.addEventListener('click', () => {
+    previousIndex = currentIndex;
     currentIndex = (currentIndex + 1) % cards.length;
-    renderCarousel();
+    renderCarousel('next');
   });
 
   renderCarousel();

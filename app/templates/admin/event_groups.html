@@ -61,6 +61,8 @@
       {% set reservation = reserved_map.get(machine.id) %}
       {% set reserve_label = reservation.payer_name if reservation else '' %}
       {% set reserve_payment = reservation.payment_provider if reservation else '' %}
+      {% set reserve_payment_status = reservation.payment_status if reservation else '' %}
+      {% set reserve_reservation_id = reservation.id if reservation else '' %}
       {% set visual_status = 'reserved' if reservation else machine.status %}
       <button
         type="button"
@@ -73,12 +75,14 @@
         data-machine-price="{{ section.group.price|money_br }}"
         data-machine-reserved-by="{{ reserve_label }}"
         data-machine-payment="{{ reserve_payment }}"
+        data-machine-payment-status="{{ reserve_payment_status }}"
+        data-machine-reservation-id="{{ reserve_reservation_id }}"
       >
         <span class="admin-machine-tile__button">
           <span class="admin-machine-tile__label">{{ machine.label }}</span>
           <span class="admin-machine-tile__status">
             {% if reservation %}
-              Reservada para {{ reservation.payer_name }}
+              {{ reservation.payer_name }}
             {% elif machine.status == 'disabled' %}
               Desativada
             {% else %}
@@ -114,6 +118,12 @@
       <div><span>Reserva atual</span><strong id="machine-modal-reserved-by">Sem reserva</strong></div>
       <div><span>Pagamento</span><strong id="machine-modal-payment">-</strong></div>
     </div>
+
+    <form method="post" class="admin-machine-reserved-form" id="machine-release-form" hidden>
+      <input type="hidden" name="action" value="cancel_reservation">
+      <input type="hidden" name="reservation_id" id="release-reservation-id">
+      <button class="btn btn-danger full" type="submit"><i class="bi bi-person-dash"></i> Tirar reserva</button>
+    </form>
 
     <div class="admin-machine-modal__actions" id="machine-modal-actions"></div>
 

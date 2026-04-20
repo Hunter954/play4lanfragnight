@@ -544,6 +544,15 @@ def event_groups(event_id):
                 db.session.commit()
             flash(f'Disponibilidade de {group.name} atualizada.', 'success')
 
+        elif action == 'cancel_reservation':
+            reservation = Reservation.query.filter_by(event_id=event.id, id=request.form.get('reservation_id')).first_or_404()
+            machine_labels = [item.machine.label for item in reservation.items]
+            ReservationItem.query.filter_by(reservation_id=reservation.id).delete(synchronize_session=False)
+            PaymentLog.query.filter_by(reservation_id=reservation.id).delete(synchronize_session=False)
+            db.session.delete(reservation)
+            db.session.commit()
+            flash(f'Reserva da máquina {", ".join(machine_labels)} removida.', 'success')
+
         elif action == 'reserve_machine':
             machine = Machine.query.filter_by(event_id=event.id, id=request.form.get('machine_id')).first_or_404()
             payer_name = (request.form.get('payer_name') or '').strip()

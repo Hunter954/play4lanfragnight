@@ -6,16 +6,12 @@
       <div class="admin-sidebar__intro">
         <span class="eyebrow">PAINEL PLAY4LAN</span>
         <h2>Central do admin</h2>
-        <p>Acesse eventos, máquinas, vendas e integrações de forma mais direta.</p>
       </div>
 
       <nav class="admin-nav" aria-label="Navegação do painel">
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.dashboard' else '' }}" href="{{ url_for('admin.dashboard') }}">
           <i class="bi bi-speedometer2"></i>
-          <span>
-            <strong>Resumo</strong>
-            <small>Indicadores e últimas reservas</small>
-          </span>
+          <span><strong>Resumo</strong></span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.events' else '' }}" href="{{ url_for('admin.events') }}">
           <i class="bi bi-calendar2-week"></i>
@@ -23,33 +19,17 @@
             <strong>Eventos</strong>
           </span>
         </a>
-        <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.event_groups' else '' }}" href="{{ url_for('admin.events') }}">
-          <i class="bi bi-grid-3x3-gap"></i>
-          <span>
-            <strong>Máquinas</strong>
-            <small>Controle por frag</small>
-          </span>
-        </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.sales' else '' }}" href="{{ url_for('admin.sales') }}">
           <i class="bi bi-receipt-cutoff"></i>
-          <span>
-            <strong>Vendas</strong>
-            <small>Pagamentos e clientes</small>
-          </span>
+          <span><strong>Vendas</strong></span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.apis' else '' }}" href="{{ url_for('admin.apis') }}">
           <i class="bi bi-plug"></i>
-          <span>
-            <strong>Integrações</strong>
-            <small>Tokens e conexões</small>
-          </span>
+          <span><strong>Integrações</strong></span>
         </a>
         <a class="admin-nav__link {{ 'is-active' if request.endpoint == 'admin.account' else '' }}" href="{{ url_for('admin.account') }}">
           <i class="bi bi-person-gear"></i>
-          <span>
-            <strong>Conta</strong>
-            <small>Acesso do admin</small>
-          </span>
+          <span><strong>Conta</strong></span>
         </a>
       </nav>
 
