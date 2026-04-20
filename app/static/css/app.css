@@ -1273,3 +1273,40 @@ input[readonly]{cursor:not-allowed;opacity:.92;background:rgba(255,255,255,.04)}
 @media (max-width: 700px){
   .admin-event-list{grid-template-columns:1fr}
 }
+
+
+/* Ajustes mobile da home */
+@media (max-width: 900px){
+  .hero.hero--luxury-bg{padding:28px 0 22px;}
+  .hero-grid.hero-grid-events.hero-grid-events-carousel{grid-template-columns:1fr;gap:22px;align-items:start;}
+  .hero-grid-events-carousel > div:first-child{order:1;}
+  .hero-event-carousel{order:2;width:100%;justify-content:stretch;}
+  .hero h1{max-width:100%;font-size:clamp(2.6rem,14vw,4.2rem);line-height:.95;letter-spacing:-.05em;margin:14px 0;}
+  .hero .hero-text{max-width:100%;font-size:1rem;line-height:1.65;margin-bottom:16px;}
+  .feature-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .feature-pill{justify-content:center;padding:12px 14px;font-size:.95rem;}
+  .hero-event-carousel__track{width:100%;}
+  .hero-card.hero-card-reservation-v2{width:100%;max-width:none;padding:18px 16px 16px;border-radius:24px;}
+  .hero-day{font-size:2.15rem;line-height:.92;}
+  .hero-datetime{font-size:1.25rem;}
+  .hero-card-location{font-size:.94rem !important;}
+  .hero-machine-item--split{grid-template-columns:minmax(0,1fr) auto;gap:12px;}
+  .hero-machine-price{font-size:1.1rem;}
+  .hero-card-reservation-v2 .btn.full{height:50px;font-size:1rem;}
+}
+
+@media (max-width: 640px){
+  .hero.hero--luxury-bg{padding-top:18px;}
+  .container.hero-grid.hero-grid-events.hero-grid-events-carousel{width:min(100%,calc(100% - 20px));}
+  .eyebrow{font-size:.78rem;padding:8px 12px;}
+  .hero h1{font-size:clamp(2.35rem,15vw,3.8rem);margin:12px 0 10px;}
+  .hero .hero-text{font-size:.98rem;margin-bottom:14px;}
+  .feature-row{grid-template-columns:1fr;}
+  .feature-pill{justify-content:flex-start;}
+  .hero-event-carousel__track{gap:12px;}
+  .hero-card-line--schedule-compact{gap:10px;}
+  .hero-card-availability-summary span{font-size:.95rem;white-space:normal;}
+  .hero-machine-name,.hero-machine-stock{font-size:.95rem;}
+  .hero-machine-price{font-size:1rem;}
+  .hero-carousel-nav{width:48px;height:48px;margin-top:10px;}
+}

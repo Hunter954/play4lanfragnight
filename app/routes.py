@@ -246,7 +246,21 @@ def home():
 
 @site_bp.route('/evento/<slug>')
 def event_detail(slug):
-    event = FragNightEvent.query.filter_by(slug=slug).first_or_404()
+    event = FragNightEvent.query.filter_by(slug=slug).first()
+    if not event:
+        normalized_slug = slugify_text(slug)
+        for candidate in FragNightEvent.query.order_by(FragNightEvent.id.desc()).all():
+            candidate_slugs = {
+                candidate.slug,
+                slugify_text(candidate.title),
+                f"evento-{candidate.id}",
+                str(candidate.id),
+            }
+            if slug in candidate_slugs or normalized_slug in candidate_slugs:
+                event = candidate
+                break
+    if not event:
+        abort(404)
     groups = MachineGroup.query.filter_by(event_id=event.id).order_by(MachineGroup.id.asc()).all()
     reserved_rows = db.session.query(ReservationItem.machine_id).join(Reservation).filter(
         Reservation.event_id == event.id,
@@ -257,7 +271,7 @@ def event_detail(slug):
     blocked_machine_ids = unavailable_machine_ids | disabled_machine_ids
     sections = build_machine_sections(groups, blocked_machine_ids)
     total_available_count = sum(section['available_count'] for section in sections)
-    weekday_label = weekday_names.get(event.event_date.weekday(), event.event_date.strftime('%A').upper())
+    weekday_label = WEEKDAY_NAMES.get(event.event_date.weekday(), event.event_date.strftime('%A').upper())
     return render_template(
         'site/event_detail.html',
         event=event,
